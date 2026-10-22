@@ -4,10 +4,12 @@ import json
 import os
 import subprocess
 import tempfile
+import tomllib
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
-wheel = next((root / "dist").glob("change_radar-*.whl"))
+version = tomllib.loads((root / "pyproject.toml").read_text())["project"]["version"]
+wheel = root / "dist" / f"change_radar-{version}-py3-none-any.whl"
 with tempfile.TemporaryDirectory(prefix="radar-wheel-") as folder:
     base = Path(folder)
     subprocess.run(["python3", "-m", "venv", str(base / "env")], check=True)
@@ -102,6 +104,51 @@ with tempfile.TemporaryDirectory(prefix="radar-wheel-") as folder:
     assert "`tests/test_http.py::test_http` (endpoint_literal_candidate)" in exported
     assert "const markdownReport = " in html
     assert "__RADAR_MARKDOWN__" not in html
+    auth = json.loads(
+        run(
+            "impact",
+            root / "examples/preview",
+            "--seed",
+            "security.py::read_token",
+            "--depth",
+            "8",
+        ).stdout
+    )
+    assert {"routes.py::listing", "routes.py::me"} <= {i["id"] for i in auth["impact"]}
+    assert any(
+        e["source"] == "security.py::CurrentUser"
+        and e["target"] == "security.py::current_user"
+        and e["type"] == "depends"
+        for e in auth["edges"]
+    )
+    models = json.loads(
+        run(
+            "impact",
+            root / "examples/preview",
+            "--seed",
+            "models.py::Item",
+            "--depth",
+            "8",
+        ).stdout
+    )
+    assert {"models.py::Page", "routes.py::listing"} <= {
+        i["id"] for i in models["impact"]
+    }
+    assert any(
+        e["source"] == "models.py::Page"
+        and e["target"] == "models.py::Item"
+        and e["evidence"]["line"] == 9
+        for e in models["edges"]
+    )
+    installed_version = subprocess.run(
+        [str(python), "-c", "import change_radar; print(change_radar.__version__)"],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=env,
+        cwd=base,
+    ).stdout.strip()
+    assert installed_version == version
     print(
         "PASS: fresh wheel install, CLI, HTML/Markdown assets, both local skill installers, inherits and test-label exports; no agent runtime invoked."
     )

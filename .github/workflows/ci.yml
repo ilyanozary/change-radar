@@ -18,6 +18,7 @@ jobs:
       - run: python scripts/evaluate.py
       - run: python scripts/evaluate_independent.py
       - run: python scripts/demo.py
+      - run: python scripts/preview.py
       - run: python -m build
       - run: python scripts/verify_package.py
       - uses: actions/upload-artifact@v4

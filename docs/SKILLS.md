@@ -25,7 +25,7 @@ Validation distinctions:
 
 - Package structure/frontmatter: validated with skill-creator validator.
 - Local copy, dry-run, conflict and symlink preservation: covered by automated tests; both destination types also exercised from the installed wheel.
-- Real Codex workflow/discovery: not end-to-end tested. A Codex executable exists, but no separate agent session was launched.
+- Real Codex workflow/discovery: verified on an isolated 0.1.0a1 fixture with a natural request; discovery, engine calls, source inspection and limitations were reviewed. See [agent evidence and reproduction](AGENT_VALIDATION.md).
 - Real Claude Code workflow/discovery: not tested; executable absent in this environment.
 
 Neither CLI nor skill runs target tests by default. Explicit authorization to analyze a repository does not authorize editing or deploying it.

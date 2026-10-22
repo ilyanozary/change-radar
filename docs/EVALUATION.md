@@ -21,3 +21,7 @@ There is no cache. The benchmark records one initial process scan and the median
 ## Correctness follow-up
 
 The original shop evaluation is retained and was rerun successfully. [Three independently authored fixture sets](independent-evaluation.json) and a [pinned external public-project evaluation](public-evaluation.json) now supplement it. Their labels were written from source before scanning; [CORRECTNESS_REVIEW.md](CORRECTNESS_REVIEW.md) records the protocol, misses, exact relation evidence and reproduction commands. The public evaluation found substantial recall gaps, so the original shop precision/recall must not be generalized.
+
+## Experimental preview follow-up
+
+The same public commit and unchanged ground truth were rerun after alias/composition support. [Full comparison](preview-comparison.json) preserves baseline and current results, coverage, truncation and exact edge checks. Both scoped recalls reach 1.0, but ItemBase adds one labeled false positive (precision 10/11). [PREVIEW.md](PREVIEW.md) explains its genuine ORM-reference chain and the coarse effect inference; expectations were not adjusted to hide it.

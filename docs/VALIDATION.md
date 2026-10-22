@@ -1,27 +1,43 @@
-# Validation status · correctness follow-up
+# Current validation · 2026-10-23 · 0.1.0a1
 
-Local environment: Python 3.14.4/Linux. The initial Git working tree was clean;
-changes were initially prepared locally for review. The user subsequently authorized committing and pushing the reviewed changes.
+The entry tree at 4e4d15c was clean. All changes in this phase are scoped to the two
+annotation patterns, demo/validation and documentation. Commits/push follow AGENTS.md;
+no merge, public release, package upload, deploy or social post is authorized.
 
-Checked:
+- **54 unittest methods pass** on Python 3.14.4/Linux: all 39 baseline methods plus
+  15 annotation methods. Subtests are not counted separately. Tests were written
+  and failed before implementation (26 initial failing subcases), then passed.
+- Shop evaluation and all three independent fixture sets pass with unchanged labels.
+- Pinned public repository: 40/40 Python files parsed, same commit and label hash.
+  CurrentUser recall 0.125→1.0, zero labeled false positives; ItemBase recall 0.70→1.0,
+  with one labeled false positive (precision 10/11). Neither traversal truncated.
+  Eight original model edge witnesses and four supplementary alias/composition
+  witnesses match expected type/path/line; see preview-comparison.json.
+- Wheel and sdist build. The exact 0.1.0a1 wheel is selected by version, avoiding
+  accidental verification of a stale wheel. Fresh offline installation verifies
+  version, CLI, report/skill assets, installer safeguards, inherits, test evidence
+  exports and both new patterns. No target dependencies are installed or executed.
+- Ruff lint/format and git diff checks pass. Generated HTML data/export escaping
+  and JavaScript syntax are checked separately from browser interaction.
+- The original three demos plus six preview cases regenerate from actual scans.
+  Empty/capped/incomplete/large cases are actual engine outputs from declared or
+  temporary source fixtures, not hand-authored graphs.
 
-- **39 unittest methods pass**, including all 22 previous methods, 16 correctness/export regression methods and one three-fixture integration check. Parameter/scenario subtests are not counted as separate methods.
-- Regression tests were run before fixes. The final regression module also runs against the isolated d5b4de8 baseline and fails as documented in regression-baseline.txt.
-- The three original shop evaluations pass again. The three independent fixtures have zero missed expected symbols, false positives, missing expected relations, unexpected related-symbol relations, incorrect evidence lines or missing expected endpoints.
-- The pinned public fastapi/full-stack-fastapi-template checkout was actually analyzed: 40/40 files parsed, no dependencies installed and no target imports/execution. Its partial-label recall is 0.70 (ItemBase) and 0.125 (CurrentUser); see public-evaluation.json for exact found/missed/false-positive sets and coverage counts.
-- Ruff lint and formatting pass over src/tests/scripts. The fixture files are deliberately not autoformatted: manually predeclared evidence line numbers are part of the evaluation contract.
-- Standard wheel/sdist build and fresh offline wheel install are checked; packaged CLI/HTML/Markdown and both skill installers are exercised. A separate installed-wheel check covers the new inherits relation and canonical browser Markdown content.
-- HTML embeds escaped data and canonical Markdown; injection/marker-shaped strings and evidence labels are tested. Extracted generated inline JavaScript passes node --check. These are content/syntax checks, not browser interactions.
-- Three original demos and three independent evaluation reports regenerate as HTML, JSON and Markdown under .change-radar/.
+| Surface | Status | Evidence / limitation |
+|---|---|---|
+| Standalone engine/CLI/package | Verified locally | Fresh offline wheel, existing evaluations, positive/negative tests |
+| Codex skill end-to-end | Verified on one fixture | Real CLI session exit 0; discovery, seeds, engine, source reads and limits reviewed; all 5 source files unchanged |
+| Claude Code end-to-end | Not performed | Executable absent; file installation is a separate passing check |
+| Real browser interactions | Not performed | Browser setup returned no browser; discovery empty; manual steps in BROWSER_ACCEPTANCE.md |
+| Hosted CI | Not a pass | Last reviewed run 39827651500 stopped before any steps because GitHub reported an account billing lock; no account/payment changes made |
+| Python 3.11–3.13 locally | Not performed | Matrix configured, not established by local 3.14 results |
 
-Not checked or still unsupported:
+Remaining analysis boundaries: dynamic/rebound/cyclic aliases, complex quoted
+annotations, unknown generic containers, dependency overrides, arbitrary dataflow,
+instance/inherited dispatch, lambda/comprehension bodies and global/nonlocal names.
+Annotation/ORM composition can overapproximate affected consumers, as measured.
+No cache or large-repository performance claim is added.
 
-- Real browser search/filter/selection/evidence-panel/download/offline opening: the Browser skill returned “No browser is available”, and discovery returned []. No screenshots or interaction results are claimed.
-- End-to-end skill discovery/behavior in Codex or Claude Code remains untested.
-- Python 3.11/3.12/3.13 were not locally executed. The CI matrix includes them, but this revision has not been uploaded. The earlier baseline's hosted CI was blocked before any steps by a GitHub account billing issue; it does not establish a code failure or a pass.
-- Lambda/comprehension bodies, global/nonlocal resolution, generic type-parameter scopes, arbitrary dataflow, inherited method dispatch, exact field-level effects, class-field composition and shared Annotated/Depends aliases remain unsupported. Relevant coverage entries and limitations are emitted.
-- No application server or target tests were run. No representative large-repository performance benchmark or cache was added.
-
-See CORRECTNESS_REVIEW.md for reproduction commands, pre/post behavior and manually
-confirmed public source chains. The distribution license/copyright decision remains
-with the owner. No merge, package publication or deployment occurred in this phase.
+The owner's license/copyright decision and real browser acceptance remain gates to
+a full public experimental announcement. Missing Claude verification is disclosed;
+no universal agent or accuracy claim is made. See PREVIEW.md and AGENT_VALIDATION.md.

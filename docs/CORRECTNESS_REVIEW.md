@@ -1,4 +1,4 @@
-# Correctness review
+# Correctness review (historical baseline)
 
 Base: `d5b4de86da019403bb28431abd211f73d635cbaf`. The working tree was clean at
 entry; no pre-existing local edits were replaced. Changes were initially prepared
@@ -170,3 +170,5 @@ failed before any steps ran. GitHub's annotation says the account is locked due 
 a billing issue. It is not a test failure in the analyzer. The hosted result for the revised workflow must be checked separately; the earlier
 run does not validate this revision. Local validation is recorded in
 [VALIDATION.md](VALIDATION.md).
+
+The metrics and unsupported-pattern descriptions above record the 4e4d15c review. The current experimental candidate adds two patterns; see [PREVIEW.md](PREVIEW.md) for updated support and the same-ground-truth comparison.

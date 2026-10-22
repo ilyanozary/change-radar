@@ -1,29 +1,51 @@
-# Public introduction draft
+# Draft introduction · experimental 0.1
 
-Value: local, explainable change impact exploration for Python/FastAPI developers using Codex or Claude Code. It connects likely consumers, API contracts and tests to inspectable static evidence before editing code.
+Do not post this automatically. Select a license/copyright holder and complete
+browser acceptance before declaring the downloadable open-source preview ready.
+The local package is 0.1.0a1; no public release/tag/package upload has been made.
 
-## 60-second video
+## Reproducible 60-second demo
 
-0–8s: “Before replacing password login with OTP, what else should we inspect?” Show examples/shop and run the OTP demo.
+Preparation: install the checkout and run `python scripts/preview.py`. Browser steps
+below are the planned recording script, not a claim that browser QA has passed.
 
-8–20s: Open otp.html. Point to the seed and the DEMO badge. Select the login endpoint and its call evidence.
+0–8s: Ask “اگر وابستگی احراز هویت را تغییر بدهم، چه endpointهایی تحت‌تأثیرند؟”
+Show examples/preview/security.py and the natural request in the agent.
 
-20–35s: Open shared.html. Follow normalization → authentication → login, then normalization → current_user → profile/session. Explain that the UI arrows point in the opposite direction, from consumer to dependency.
+8–18s: Show the actual CLI command:
+`change-radar impact examples/preview --seed security.py::read_token --depth 8`.
+The standalone CLI receives an explicit seed; the agent chooses it from the request.
 
-35–45s: Filter relations and inspect Depends, the response model and a suggested test. Distinguish literal-URL heuristic candidates from observed call references.
+18–35s: Open .change-radar/preview/auth.html. Follow reverse impact from read_token
+through current_user and the CurrentUser alias to listing and me. Point out that
+UI arrows point consumer→dependency. Select the alias and show security.py:13 and
+its keyword Depends witness, then routes.py:9 and :14 consumer annotations.
 
-45–53s: Show coverage and unresolved items. “Static references show where to investigate; they do not prove breakage.”
+35–45s: Open models.html. Show Item→Page→listing impact with models.py:9. State that
+this is a type-reference dependency, not proof of serialization failure.
 
-53–60s: Export JSON/Markdown; show the skill's seed-selection workflow. Invite contributors to add tested resolver patterns. Avoid claiming runtime behavior has been verified.
+45–53s: Show the existing HTTP test candidate, labeled heuristic, and the manual
+coverage list. Export JSON/Markdown only after manually accepting browser behavior.
 
-## LinkedIn draft (Persian)
+53–60s: Show the bounded public evaluation result: both scoped recalls improved,
+but ORM composition adds one labeled false positive. Invite fixture-based feedback.
+No “most accurate”, “production ready” or general 100% accuracy claim.
 
-قبل از تغییر یک تابع مشترک، چطور می‌فهمیم کدام endpointها و تست‌ها به بررسی نیاز دارند؟
+## پیشنویس لینکدین فارسی
 
-Change Radar را برای همین مرحله ساخته‌ام: تحلیل محلی Python و FastAPI، انتخاب فایل یا نماد شروع، و دیدن مصرف‌کننده‌های احتمالی همراه با مسیر شواهد و شماره خط.
+نسخه آزمایشی ۰.۱ Change Radar: پیش از تغییر کد، مصرف‌کننده‌های احتمالی را با شاهد ببینیم.
 
-دمو سه تغییر را بررسی می‌کند: ورود با OTP، تغییر مدل پاسخ و اصلاح تابع مشترک. گزارش HTML آفلاین است و CLI و اسکیل Codex/Claude Code از یک هسته استفاده می‌کنند.
+تمرکز این ابزار روی Python و FastAPI است. در این مرحله دو الگوی رایج اضافه شده:
+وابستگی‌های مشترک Annotated/Depends و مدل‌های تو‌در‌تو. گزارش محلی، مسیر رسیدن
+از نماد شروع به endpoint و شماره خط شواهد را نشان می‌دهد.
 
-تحلیل ایستا محدودیت دارد؛ import با call یکی نیست و نتیجه خالی تضمین امنیت تغییر نیست. موارد حل‌نشده در گزارش دیده می‌شوند. بازخورد درباره الگوهای واقعی FastAPI و fixtureهای ارزیابی برای مرحله بعد ارزشمند است.
+تحلیل پایه آفلاین است و کد یا تست مخزن هدف را اجرا نمی‌کند. CLI و اسکیل از یک
+هسته استفاده می‌کنند. رفتار Codex روی یک مثال جدا بررسی شده؛ آزمون واقعی Claude
+Code هنوز انجام نشده است.
 
-Publication gate: choose a license/owner, validate real agent workflows and perform browser visual QA before describing those as verified. No screenshots were fabricated; none are included because no connected browser was available. This is a draft, not a published post.
+ارزیابی روی یک مخزن عمومی با commit و برچسب‌های ثابت، پوشش بهتری نشان داد؛ در عین
+حال یک مثبت کاذب ناشی از رابطه‌های ORM باقی ماند. این نتایج ادعای دقت عمومی نیستند.
+تحلیل ایستا محل بررسی را پیشنهاد می‌کند، نه خرابی قطعی یا تضمین ایمنی تغییر.
+
+برای تکمیل معرفی، تأیید دستی مرورگر و تصمیم مالک درباره لایسنس هنوز لازم است.
+بازخورد همراه با مثال کوچک و انتظار مشخص، برای مرحله بعد مفید است.
