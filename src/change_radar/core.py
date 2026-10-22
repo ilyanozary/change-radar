@@ -7,6 +7,8 @@ import tokenize
 from collections import defaultdict, deque
 from pathlib import Path
 
+from .scopes import import_reference, index_scopes, resolve_lexical
+
 LIMITATIONS = [
     "Static evidence is not proof of runtime breakage; empty results do not imply safety.",
     "Calls: lexical names, module aliases and explicit class attributes only. Instance dispatch, monkeypatching and dynamic imports require manual review.",
@@ -14,7 +16,9 @@ LIMITATIONS = [
     "Annotations are reference evidence, not complete Pydantic field or serialization analysis.",
     "No execution of target code or tests. No semantic interpretation of free text.",
     "No cache: scans rebuild the graph; gitignore rules are delegated to Git when available.",
-    "Module bindings are simplified: scoped/conditional imports and wildcard imports need manual review. Direct module assignments and local parameters/assignments suppress call resolution for shadowed names.",
+    "Lexical lookup covers parameter kinds, nested definitions and closures without entering child scopes. Assignments/redefinitions and scoped imports remain unknown; global/nonlocal names, lambda bodies and comprehension bodies require review.",
+    "Resolvable class bases produce inherits references, not inherited method dispatch or proof of runtime breakage. Dynamic/generic/external bases remain unresolved.",
+    "Annotation aliases (including shared Annotated/Depends aliases), class field composition and arbitrary value references are not expanded.",
     "Endpoint test matching is heuristic: a matching HTTP method and literal URL does not prove the client calls this application.",
 ]
 
@@ -184,6 +188,7 @@ def scan(root, excludes=()):
 
         definitions(trees[path].body)
     module_for = {p: m for m, ps in modules.items() for p in ps}
+    import_refs = {path: {} for path in trees}
     for path, tree in trees.items():
         for n in ast.walk(tree):
             if isinstance(n, (ast.Import, ast.ImportFrom)) and n not in tree.body:
@@ -195,9 +200,12 @@ def scan(root, excludes=()):
                     )
                 )
         for n in tree.body:
+            import_refs[path][id(n)] = {}
             if isinstance(n, ast.Import):
                 for alias in n.names:
-                    bindings[path][alias.asname or alias.name.split(".")[0]] = (
+                    import_refs[path][id(n)][
+                        alias.asname or alias.name.split(".")[0]
+                    ] = bindings[path][alias.asname or alias.name.split(".")[0]] = (
                         alias.name if alias.asname else alias.name.split(".")[0]
                     )
             elif isinstance(n, ast.ImportFrom):
@@ -210,17 +218,17 @@ def scan(root, excludes=()):
                         pkg[: max(0, len(pkg) - n.level + 1)] + ([base] if base else [])
                     )
                 for alias in n.names:
-                    bindings[path][alias.asname or alias.name] = (
-                        base + "." + alias.name
-                    ).strip(".")
+                    import_refs[path][id(n)][alias.asname or alias.name] = bindings[
+                        path
+                    ][alias.asname or alias.name] = (base + "." + alias.name).strip(".")
+    lexical = {
+        path: index_scopes(tree, scopes[path], import_refs[path])
+        for path, tree in trees.items()
+    }
     blocked_globals = {}
     for path, tree in trees.items():
         blocked_globals[path] = {
-            x.id
-            for n in tree.body
-            if isinstance(n, (ast.Assign, ast.AnnAssign, ast.AugAssign))
-            for x in ast.walk(n)
-            if isinstance(x, ast.Name) and isinstance(x.ctx, ast.Store)
+            name for name, value in lexical[path][""].names.items() if value is None
         }
         for name in blocked_globals[path]:
             if name in bindings[path] or name in scopes[path]:
@@ -241,6 +249,11 @@ def scan(root, excludes=()):
                 if tail.split(".")[0] in blocked_globals.get(p, set()):
                     return None
                 if tail in scopes.get(p, {}):
+                    components = tail.split(".")
+                    for j in range(1, len(components)):
+                        parent = scopes[p].get(".".join(components[:j]))
+                        if not parent or nodes[parent]["kind"] != "class":
+                            return None
                     return scopes[p][tail]
                 first, *rest = tail.split(".")
                 if first in bindings.get(p, {}):
@@ -257,21 +270,7 @@ def scan(root, excludes=()):
     def resolve(path, name, scope=""):
         if not name:
             return None
-        first = name.split(".")[0]
-        if first in blocked_globals[path]:
-            return None
-        if first in bindings[path]:
-            return resolve_global(expand(path, name))
-        prefixes = scope.split(".")[:-1]
-        while prefixes:
-            key = ".".join(prefixes) + "." + name
-            prefix_id = scopes[path].get(".".join(prefixes))
-            if key in scopes[path] and (
-                not prefix_id or nodes[prefix_id]["kind"] != "class"
-            ):
-                return scopes[path][key]
-            prefixes.pop()
-        return scopes[path].get(name)
+        return resolve_lexical(lexical[path], scope, name, resolve_global, nodes)
 
     for path, tree in trees.items():
         for n in tree.body:
@@ -285,7 +284,7 @@ def scan(root, excludes=()):
                     name = (
                         alias.name
                         if isinstance(n, ast.Import)
-                        else bindings[path].get(local, "")
+                        else import_refs[path][id(n)].get(local, "")
                     )
                     dest = resolve_global(name)
                     if dest:
@@ -308,6 +307,23 @@ def scan(root, excludes=()):
                             )
                         )
         # Top-level bindings to FastAPI/APIRouter constructors only.
+    for path, tree in trees.items():
+        for statement in tree.body:
+            value = getattr(statement, "value", None)
+            if isinstance(statement, (ast.Assign, ast.AnnAssign)) and isinstance(
+                value, ast.Subscript
+            ):
+                if expand(path, dotted(value.value)) in {
+                    "typing.Annotated",
+                    "typing_extensions.Annotated",
+                }:
+                    issues.append(
+                        dict(
+                            path=path,
+                            line=statement.lineno,
+                            category="unresolved_annotation_alias",
+                        )
+                    )
     routers, includes = {}, []
     for path, tree in trees.items():
         for n in tree.body:
@@ -393,7 +409,7 @@ def scan(root, excludes=()):
             def __init__(self):
                 self.scope = ""
                 self.owner = path
-                self.blocked = set()
+                self.eval_scope = ""
 
             def visit_ClassDef(self, n):
                 self.visit_definition(n)
@@ -404,7 +420,7 @@ def scan(root, excludes=()):
             visit_AsyncFunctionDef = visit_FunctionDef
 
             def visit_definition(self, n):
-                old = self.scope, self.owner, self.blocked
+                old = self.scope, self.owner, self.eval_scope
                 self.scope = (self.scope + "." if self.scope else "") + n.name
                 if self.scope not in scopes[path]:
                     issues.append(
@@ -412,25 +428,37 @@ def scan(root, excludes=()):
                             path=path, line=n.lineno, category="conditional_definition"
                         )
                     )
-                    self.scope, self.owner, self.blocked = old
+                    self.scope, self.owner, self.eval_scope = old
                     return
                 self.owner = scopes[path][self.scope]
-                self.blocked = set()
-                if hasattr(n, "args"):
-                    self.blocked = {
-                        a.arg
-                        for a in n.args.posonlyargs + n.args.args + n.args.kwonlyargs
-                    }
-                    for child in ast.walk(n):
-                        if isinstance(child, (ast.Import, ast.ImportFrom)):
-                            self.blocked.update(
-                                a.asname or a.name.split(".")[0] for a in child.names
+                # Headers resolve in the enclosing scope, while their evidence is
+                # attributed to the definition whose contract/default uses them.
+                self.eval_scope = old[0]
+                if isinstance(n, ast.ClassDef):
+                    for base in n.bases:
+                        dest = resolve(path, dotted(base), self.eval_scope)
+                        if (
+                            dest
+                            and dest != self.owner
+                            and nodes[dest]["kind"] == "class"
+                        ):
+                            edge(self.owner, dest, "inherits", path, base.lineno)
+                        else:
+                            issues.append(
+                                dict(
+                                    path=path,
+                                    line=base.lineno,
+                                    category="unresolved_base",
+                                )
                             )
-                    self.blocked.update(
-                        x.id
-                        for st in n.body
-                        for x in ast.walk(st)
-                        if isinstance(x, ast.Name) and isinstance(x.ctx, ast.Store)
+                frame = lexical[path][self.scope]
+                for name in sorted(frame.directives):
+                    issues.append(
+                        dict(
+                            path=path,
+                            line=frame.directives[name],
+                            category="unresolved_scope_directive",
+                        )
                     )
                 for dec in n.decorator_list:
                     if isinstance(dec, ast.Call) and isinstance(
@@ -486,34 +514,86 @@ def scan(root, excludes=()):
                     if a[0] == "returns" and a[1]:
                         self.references(a[1], "annotation")
                 if hasattr(n, "args"):
-                    for arg in n.args.posonlyargs + n.args.args + n.args.kwonlyargs:
+                    for arg in (
+                        n.args.posonlyargs
+                        + n.args.args
+                        + n.args.kwonlyargs
+                        + [a for a in (n.args.vararg, n.args.kwarg) if a]
+                    ):
                         if arg.annotation:
                             self.references(arg.annotation, "annotation")
+                # Do not generic_visit definitions: body locals must not govern
+                # defaults, decorators, bases, or annotations.
+                for dec in n.decorator_list:
+                    self.visit(dec)
+                if hasattr(n, "args"):
+                    for value in n.args.defaults + [x for x in n.args.kw_defaults if x]:
+                        self.visit(value)
+                    for arg in (
+                        n.args.posonlyargs
+                        + n.args.args
+                        + n.args.kwonlyargs
+                        + [a for a in (n.args.vararg, n.args.kwarg) if a]
+                    ):
+                        if arg.annotation:
+                            self.visit(arg.annotation)
+                    if n.returns:
+                        self.visit(n.returns)
+                else:
+                    for value in n.bases + [k.value for k in n.keywords]:
+                        self.visit(value)
+                self.eval_scope = self.scope
+                for stmt in n.body:
+                    self.visit(stmt)
+                self.scope, self.owner, self.eval_scope = old
+
+            def visit_AnnAssign(self, n):
+                if nodes[self.owner]["kind"] == "class":
+                    issues.append(
+                        dict(
+                            path=path,
+                            line=n.lineno,
+                            category="unresolved_class_annotation",
+                        )
+                    )
                 self.generic_visit(n)
-                self.scope, self.owner, self.blocked = old
+
+            def visit_Lambda(self, n):
+                issues.append(
+                    dict(path=path, line=n.lineno, category="unresolved_lambda")
+                )
+                for value in n.args.defaults + [x for x in n.args.kw_defaults if x]:
+                    self.visit(value)
+
+            def visit_ListComp(self, n):
+                issues.append(
+                    dict(path=path, line=n.lineno, category="unresolved_comprehension")
+                )
+                # The first iterator is evaluated in the enclosing scope.
+                self.visit(n.generators[0].iter)
+
+            visit_SetComp = visit_ListComp
+            visit_DictComp = visit_ListComp
+            visit_GeneratorExp = visit_ListComp
 
             def references(self, n, kind):
                 for x in ast.walk(n):
                     if isinstance(x, (ast.Name, ast.Attribute)):
-                        dest = resolve(path, dotted(x), self.scope)
+                        dest = resolve(path, dotted(x), self.eval_scope)
                         if dest:
                             edge(self.owner, dest, kind, path, x.lineno)
 
             def visit_Call(self, n):
                 name = dotted(n.func)
-                dest = (
-                    None
-                    if name.split(".")[0] in self.blocked
-                    else resolve(path, name, self.scope)
-                )
+                dest = resolve(path, name, self.eval_scope)
                 if dest:
                     edge(self.owner, dest, "calls", path, n.lineno)
-                elif expand(path, name) in {
+                elif import_reference(lexical[path], self.eval_scope, name) in {
                     "fastapi.Depends",
                     "fastapi.params.Depends",
                 }:
                     if n.args:
-                        dependency = resolve(path, dotted(n.args[0]), self.scope)
+                        dependency = resolve(path, dotted(n.args[0]), self.eval_scope)
                         if dependency:
                             edge(self.owner, dependency, "depends", path, n.lineno)
                         else:
@@ -524,7 +604,9 @@ def scan(root, excludes=()):
                                     category="unresolved_dependency",
                                 )
                             )
-                elif name and expand(path, name).split(".")[0] not in {
+                elif name and (
+                    import_reference(lexical[path], self.eval_scope, name) or name
+                ).split(".")[0] not in {
                     "fastapi",
                     "pydantic",
                 }:

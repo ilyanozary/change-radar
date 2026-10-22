@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 
@@ -49,7 +50,7 @@ def markdown(data):
     ]
     lines += ["", "## Limitations"] + ["- " + s for s in data["limitations"]]
     lines += ["", "## Suggested existing tests"] + [
-        "- `" + safe(t["id"]) + "` (graph reference)"
+        "- `" + safe(t["id"]) + "` (" + safe(t["evidence"]) + ")"
         for t in data.get("suggested_tests", [])
     ]
     lines += ["", "## Related endpoints"] + [
@@ -67,15 +68,20 @@ def markdown(data):
 
 
 def render(data):
-    payload = (
-        json.dumps(data, ensure_ascii=True, sort_keys=True)
-        .replace("<", "\\u003c")
-        .replace(">", "\\u003e")
-        .replace("&", "\\u0026")
-    )
-    return (
-        Path(__file__)
-        .with_name("template.html")
-        .read_text()
-        .replace("__RADAR_DATA__", payload)
+    def encoded(value):
+        return (
+            json.dumps(value, ensure_ascii=True, sort_keys=True)
+            .replace("<", "\\u003c")
+            .replace(">", "\\u003e")
+            .replace("&", "\\u0026")
+        )
+
+    replacements = {
+        "__RADAR_DATA__": encoded(data),
+        "__RADAR_MARKDOWN__": encoded(markdown(data)),
+    }
+    template = Path(__file__).with_name("template.html").read_text()
+    # Substitute only template markers, never marker-shaped text in repository data.
+    return re.sub(
+        r"__RADAR_(?:DATA|MARKDOWN)__", lambda match: replacements[match[0]], template
     )

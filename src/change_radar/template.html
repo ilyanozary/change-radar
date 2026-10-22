@@ -9,6 +9,7 @@
 <div class="below"><section><h2>Affected API contracts</h2><ul id="endpoints"></ul><h2>Suggested existing tests</h2><ul id="tests"></ul><h2>Suggested change order</h2><ol id="order"></ol><h2>New regression scenarios</h2><ul id="scenarios"></ul></section><section><h2>Coverage & manual review</h2><details><summary id="issuesTitle"></summary><ul id="issues"></ul></details><ul id="limitations"></ul><button id="json">Export JSON</button> <button id="md">Export Markdown</button></section></div><footer>No network requests. Source code is not embedded. Empty results do not establish safety.</footer></main>
 <script id="data" type="application/json">__RADAR_DATA__</script><script>
 'use strict';
+const markdownReport = __RADAR_MARKDOWN__;
 try {
 const data=JSON.parse(document.getElementById('data').textContent),$=id=>document.getElementById(id),ns='http://www.w3.org/2000/svg',impact=new Map((data.impact||[]).map(x=>[x.id,x])),byId=new Map(data.nodes.map(n=>[n.id,n]));
 let selection=null,focused=false,view={x:20,y:50,k:1},positions=new Map(),drag=null,fitPending=true;
@@ -35,6 +36,6 @@ for(const id of ['search','relation','kind','depth','certainty'])$(id).addEventL
 $('focus').onclick=()=>{focused=!focused;draw()};$('reset').onclick=()=>{focused=false;view={x:20,y:50,k:1};positions.clear();fitPending=true;for(const id of ['search','relation','kind','certainty'])$(id).value='';$('depth').value='99';draw()};
 $('graph').onwheel=e=>{e.preventDefault();view.k=Math.max(.15,Math.min(4,view.k*(e.deltaY<0?1.12:.89)));transform()};$('graph').onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};$('graph').setPointerCapture(e.pointerId)};$('graph').onpointermove=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;if(drag.id){const p=positions.get(drag.id);p.x+=dx/view.k;p.y+=dy/view.k;draw()}else{view.x+=dx;view.y+=dy;transform()}};$('graph').onpointerup=()=>drag=null;$('graph').onpointercancel=()=>drag=null;
 function download(name,value,type){const url=URL.createObjectURL(new Blob([value],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-$('json').onclick=()=>download('change-radar.json',JSON.stringify(data,null,2),'application/json');$('md').onclick=()=>download('change-radar.md','# Change Radar\n\n'+(data.impact||[]).map(i=>'- '+i.id+' · depth '+i.depth+'\n'+i.chain.map(e=>'  - '+e.type+' '+e.source+' → '+e.target+' at '+loc(e.evidence)).join('\n')).join('\n')+'\n\nLimitations\n'+data.limitations.join('\n'),'text/markdown');draw();
+$('json').onclick=()=>download('change-radar.json',JSON.stringify(data,null,2),'application/json');$('md').onclick=()=>download('change-radar.md',markdownReport,'text/markdown');draw();
 }catch(e){document.getElementById('status').textContent='Report error: '+e.message}
 </script></html>
