@@ -7,6 +7,7 @@ import tokenize
 from collections import defaultdict, deque
 from pathlib import Path
 
+from .annotations import DEPENDS, AnnotationGraph
 from .scopes import import_reference, index_scopes, resolve_lexical
 
 LIMITATIONS = [
@@ -16,9 +17,9 @@ LIMITATIONS = [
     "Annotations are reference evidence, not complete Pydantic field or serialization analysis.",
     "No execution of target code or tests. No semantic interpretation of free text.",
     "No cache: scans rebuild the graph; gitignore rules are delegated to Git when available.",
-    "Lexical lookup covers parameter kinds, nested definitions and closures without entering child scopes. Assignments/redefinitions and scoped imports remain unknown; global/nonlocal names, lambda bodies and comprehension bodies require review.",
+    "Lexical lookup covers parameter kinds, nested definitions and closures without entering child scopes. Unambiguous supported module type aliases are indexed; other assignments/redefinitions and scoped imports remain unknown; global/nonlocal names, lambda bodies and comprehension bodies require review.",
     "Resolvable class bases produce inherits references, not inherited method dispatch or proof of runtime breakage. Dynamic/generic/external bases remain unresolved.",
-    "Annotation aliases (including shared Annotated/Depends aliases), class field composition and arbitrary value references are not expanded.",
+    "Module Annotated/Depends aliases and class field annotations are reference evidence. Dynamic/rebound/cyclic aliases, unknown generic containers, complex quoted annotations and arbitrary value references remain unresolved. Alias resolution is capped at 64 levels; no serialization or runtime breakage is inferred.",
     "Endpoint test matching is heuristic: a matching HTTP method and literal URL does not prove the client calls this application.",
 ]
 
@@ -234,6 +235,8 @@ def scan(root, excludes=()):
             if name in bindings[path] or name in scopes[path]:
                 issues.append(dict(path=path, line=1, category="rebound_name"))
 
+    annotations = None
+
     def resolve_global(name, seen=None):
         seen = set() if seen is None else seen
         if name in seen:
@@ -246,6 +249,8 @@ def scan(root, excludes=()):
             mod, tail = ".".join(bits[:i]), ".".join(bits[i:])
             if len(modules.get(mod, [])) == 1:
                 p = modules[mod][0]
+                if annotations is not None and (p, tail) in annotations.records:
+                    return annotations.assignment(p, tail)
                 if tail.split(".")[0] in blocked_globals.get(p, set()):
                     return None
                 if tail in scopes.get(p, {}):
@@ -271,6 +276,16 @@ def scan(root, excludes=()):
         if not name:
             return None
         return resolve_lexical(lexical[path], scope, name, resolve_global, nodes)
+
+    def annotation_issue(path, line, category):
+        item = dict(path=path, line=line, category=category)
+        if item not in issues:
+            issues.append(item)
+
+    annotations = AnnotationGraph(
+        trees, lexical, nodes, edge, annotation_issue, resolve
+    )
+    annotations.prepare()
 
     for path, tree in trees.items():
         for n in tree.body:
@@ -307,23 +322,6 @@ def scan(root, excludes=()):
                             )
                         )
         # Top-level bindings to FastAPI/APIRouter constructors only.
-    for path, tree in trees.items():
-        for statement in tree.body:
-            value = getattr(statement, "value", None)
-            if isinstance(statement, (ast.Assign, ast.AnnAssign)) and isinstance(
-                value, ast.Subscript
-            ):
-                if expand(path, dotted(value.value)) in {
-                    "typing.Annotated",
-                    "typing_extensions.Annotated",
-                }:
-                    issues.append(
-                        dict(
-                            path=path,
-                            line=statement.lineno,
-                            category="unresolved_annotation_alias",
-                        )
-                    )
     routers, includes = {}, []
     for path, tree in trees.items():
         for n in tree.body:
@@ -547,14 +545,26 @@ def scan(root, excludes=()):
                     self.visit(stmt)
                 self.scope, self.owner, self.eval_scope = old
 
+            def visit_Assign(self, n):
+                if (
+                    self.scope == ""
+                    and len(n.targets) == 1
+                    and isinstance(n.targets[0], ast.Name)
+                ):
+                    if annotations.results.get((path, n.targets[0].id)):
+                        return
+                self.generic_visit(n)
+
             def visit_AnnAssign(self, n):
+                if (
+                    self.scope == ""
+                    and isinstance(n.target, ast.Name)
+                    and annotations.results.get((path, n.target.id))
+                ):
+                    return
                 if nodes[self.owner]["kind"] == "class":
-                    issues.append(
-                        dict(
-                            path=path,
-                            line=n.lineno,
-                            category="unresolved_class_annotation",
-                        )
+                    annotations.references(
+                        self.owner, path, n.annotation, self.eval_scope
                     )
                 self.generic_visit(n)
 
@@ -577,33 +587,15 @@ def scan(root, excludes=()):
             visit_GeneratorExp = visit_ListComp
 
             def references(self, n, kind):
-                for x in ast.walk(n):
-                    if isinstance(x, (ast.Name, ast.Attribute)):
-                        dest = resolve(path, dotted(x), self.eval_scope)
-                        if dest:
-                            edge(self.owner, dest, kind, path, x.lineno)
+                annotations.references(self.owner, path, n, self.eval_scope, kind)
 
             def visit_Call(self, n):
                 name = dotted(n.func)
                 dest = resolve(path, name, self.eval_scope)
-                if dest:
+                if dest and nodes[dest]["kind"] in {"function", "class"}:
                     edge(self.owner, dest, "calls", path, n.lineno)
-                elif import_reference(lexical[path], self.eval_scope, name) in {
-                    "fastapi.Depends",
-                    "fastapi.params.Depends",
-                }:
-                    if n.args:
-                        dependency = resolve(path, dotted(n.args[0]), self.eval_scope)
-                        if dependency:
-                            edge(self.owner, dependency, "depends", path, n.lineno)
-                        else:
-                            issues.append(
-                                dict(
-                                    path=path,
-                                    line=n.lineno,
-                                    category="unresolved_dependency",
-                                )
-                            )
+                elif import_reference(lexical[path], self.eval_scope, name) in DEPENDS:
+                    annotations.dependency(self.owner, path, n, self.eval_scope)
                 elif name and (
                     import_reference(lexical[path], self.eval_scope, name) or name
                 ).split(".")[0] not in {

@@ -14,6 +14,7 @@ class Frame:
     parent: str | None
     names: dict = field(default_factory=dict)
     directives: dict = field(default_factory=dict)
+    writes: dict = field(default_factory=dict)
 
 
 class Bindings(ast.NodeVisitor):
@@ -24,6 +25,7 @@ class Bindings(ast.NodeVisitor):
         self.imports = imports
 
     def bind(self, name, value=None):
+        self.frame.writes[name] = self.frame.writes.get(name, 0) + 1
         if name in self.frame.names and (
             self.frame.names[name] != value or (value and value[0] == "symbol")
         ):
