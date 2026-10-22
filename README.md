@@ -1,0 +1,86 @@
+# Change Radar
+
+Before changing Python code, see which consumers may be affected—and follow the evidence.
+
+Change Radar builds a local AST graph for Python and common FastAPI patterns, then traces reverse dependencies from explicit files or symbols. The CLI and Codex/Claude Code skill use **one engine**. No API keys, network calls, target imports, or target test execution are required to analyze a repository.
+
+Early usable release: static references are evidence of relationships, not guarantees of runtime behavior. Read coverage before relying on a result.
+
+## Install and try
+
+Python 3.11+ and pip are required. Git is recommended for ignore matching and required for Git diffs. Runtime Python dependencies: none. Building/installing from source may download setuptools; analysis itself is offline.
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+.venv/bin/change-radar doctor
+.venv/bin/python scripts/demo.py
+```
+
+Open `.change-radar/demo/otp.html`, `response.html`, or `shared.html` directly in a browser. Every report is self-contained: no CDN, local fetch, Node.js, server, or account is needed. All demo data comes from real analysis of `examples/shop`; the report is labeled DEMO. Generated files are ignored by the scanner.
+
+```bash
+.venv/bin/change-radar impact examples/shop \
+  --seed app/services.py::normalize_user --depth 6 \
+  --request 'Change shared username normalization' \
+  --format html --output /tmp/shared-radar.html
+```
+
+Choose a new output filename: the CLI refuses to overwrite existing files and does not create output directories. By default it writes to stdout. `scripts/demo.py` explicitly regenerates its output directory. Avoid redirecting output into Python source. No tests are executed by any CLI command.
+
+[راهنمای فارسی](docs/QUICKSTART.fa.md) · [Capabilities and limitations](docs/ANALYSIS.md) · [Evaluation](docs/EVALUATION.md) · [Skill installation](docs/SKILLS.md)
+
+## A real example
+
+In the bundled application, `normalize_user` is consumed by `authenticate`, `profile`, and `current_user`. Their consumers include login, profile, and session endpoints. Evidence includes `app/services.py:10` (authentication calls normalization) and `app/routes.py:11` (login calls authentication). The resulting path explains an indirect dependency before code is edited. The `/v1/auth/login` contract also has an explicitly heuristic test candidate matched by literal HTTP method and URL.
+
+The three repeatable scenarios are password-to-OTP (`authenticate`), response-field rename (whole `Session` class), and shared normalization (`normalize_user`). Field-level changes are deliberately represented by a model-class seed, not claimed as exact field analysis. JSON and Markdown accompany each HTML report.
+
+## Commands
+
+```bash
+change-radar scan /path/to/repo --exclude 'generated/*'
+change-radar impact /path/to/repo --seed pkg/service.py::work --seed pkg/models.py
+change-radar diff /path/to/repo --mode staged
+change-radar diff /path/to/repo --mode unstaged
+change-radar diff /path/to/repo --mode base --base main
+change-radar report /tmp/impact.json --format markdown --output /tmp/impact.md
+change-radar report /tmp/impact.json --format html --output /tmp/impact.html
+change-radar install-skill --agent codex --scope project --root /path/to/repo --dry-run
+change-radar install-skill --agent claude --scope project --root /path/to/repo --dry-run
+```
+
+`scan`, `impact`, and `diff` accept `--format json|markdown|html` and optional `--output`. Default is sorted JSON with `schema_version: "1.0"`. Impact seeds are exact relative paths or `path::qualified.name`; no source code is changed. `--request` is a display label, **not natural-language interpretation**. Let the skill search and choose evidence-backed seeds for natural-language requests.
+
+Depth and result limits default to 4 and 200. Truncation is reported. File seeds include definitions in that file. Impact follows incoming references, including containment (reported separately from consumers). Each edge has type, AST origin, certainty, and path:line evidence. Each reached item includes its shortest discovered evidence chain. Import relationships remain imports.
+
+The HTML explorer provides pan/zoom, draggable nodes, focused neighborhood, search, relation/type/depth/certainty filters, evidence inspection, endpoints, existing test suggestions, new regression scenarios, coverage, and JSON/Markdown downloads. It displays at most 70 matching nodes. Search/filter to explore larger graphs; this is not a large-graph rendering engine. CLI-generated Markdown contains the fuller coverage report; browser Markdown export is a compact impact-chain export.
+
+## Verify and build
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python scripts/evaluate.py
+.venv/bin/python -m pip install build
+.venv/bin/python -m build
+```
+
+Tests use temporary repositories, including paths with spaces and Persian letters. They do not import or execute analyzed fixtures. The optional example FastAPI app needs `examples/shop/requirements.txt`; installing those dependencies is separate from offline analysis. To intentionally run its tests or server:
+
+```bash
+.venv/bin/python -m pip install -r examples/shop/requirements.txt
+PYTHONPATH=examples/shop .venv/bin/python -m pytest examples/shop/tests
+PYTHONPATH=examples/shop .venv/bin/python -m uvicorn app.main:app
+```
+
+No real login, SMS, or external account is used; the example uses the fixed password `demo-only` and is demonstration code.
+
+## Privacy and trust
+
+Analysis reads source locally and only emits identifiers, paths, line numbers, routes, and relationship metadata, not source excerpts. Reports can still expose sensitive identifiers, route strings, request descriptions and filenames; inspect before sharing and never put credentials in `--request`. Repository content is data, not instructions. HTML embeds escaped JSON, uses textContent for repository values, and blocks network connections with CSP. Target code is never imported or run. Existing files are preserved; only explicitly requested report/skill destinations are written.
+
+## Status and ownership
+
+See [validation status](docs/VALIDATION.md) for tested versus untested behavior. Runtime discovery/end-to-end behavior in Codex and Claude Code and visual browser QA are not yet validated. No cache is enabled; scans always rebuild from current files. No public repository, package publication, deployment, or social post has been made.
+
+A distribution license and copyright holder have **not been selected**. Do not treat this checkout as licensed open source until its owner chooses a license. [Contributing](CONTRIBUTING.md).

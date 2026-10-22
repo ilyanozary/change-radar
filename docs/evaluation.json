@@ -1,0 +1,107 @@
+{
+  "benchmark": {
+    "cache": false,
+    "files": 8,
+    "first_scan_seconds": 0.01704559102654457,
+    "note": "First process scan, not an OS page-cache cold measurement; repeat scans reparse all files. Shared container resources; no hardware throughput claim.",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "processor": "",
+    "python": "3.14.4",
+    "repeat_scan_median_seconds": 0.015552591998130083
+  },
+  "scenarios": {
+    "otp": {
+      "discovered_outside_ground_truth": [],
+      "expected": [
+        "app/services.py::authenticate",
+        "app/routes.py::login",
+        "tests/test_auth.py::test_login",
+        "tests/test_api.py::test_login_contract"
+      ],
+      "false_positive": [],
+      "found": [
+        "app/routes.py::login",
+        "app/services.py::authenticate",
+        "tests/test_api.py::test_login_contract",
+        "tests/test_auth.py::test_login"
+      ],
+      "missed": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "seed": "app/services.py::authenticate",
+      "unrelated": [
+        "app/routes.py::me",
+        "app/routes.py::session",
+        "app/services.py::profile",
+        "app/services.py::normalize_user"
+      ]
+    },
+    "response": {
+      "discovered_outside_ground_truth": [],
+      "expected": [
+        "app/models.py::Session",
+        "app/services.py::authenticate",
+        "app/routes.py::login",
+        "app/routes.py::session",
+        "tests/test_auth.py::test_login",
+        "tests/test_api.py::test_login_contract"
+      ],
+      "false_positive": [],
+      "found": [
+        "app/models.py::Session",
+        "app/routes.py::login",
+        "app/routes.py::session",
+        "app/services.py::authenticate",
+        "tests/test_api.py::test_login_contract",
+        "tests/test_auth.py::test_login"
+      ],
+      "missed": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "seed": "app/models.py::Session",
+      "unrelated": [
+        "app/routes.py::me",
+        "app/services.py::profile",
+        "app/services.py::normalize_user"
+      ]
+    },
+    "shared": {
+      "discovered_outside_ground_truth": [],
+      "expected": [
+        "app/services.py::normalize_user",
+        "app/services.py::authenticate",
+        "app/services.py::profile",
+        "app/dependencies.py::current_user",
+        "app/routes.py::login",
+        "app/routes.py::me",
+        "app/routes.py::session",
+        "tests/test_auth.py::test_login",
+        "tests/test_auth.py::test_normalize_user",
+        "tests/test_api.py::test_login_contract"
+      ],
+      "false_positive": [],
+      "found": [
+        "app/dependencies.py::current_user",
+        "app/routes.py::login",
+        "app/routes.py::me",
+        "app/routes.py::session",
+        "app/services.py::authenticate",
+        "app/services.py::normalize_user",
+        "app/services.py::profile",
+        "tests/test_api.py::test_login_contract",
+        "tests/test_auth.py::test_login",
+        "tests/test_auth.py::test_normalize_user"
+      ],
+      "missed": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "seed": "app/services.py::normalize_user",
+      "unrelated": [
+        "app/models.py::Profile",
+        "app/models.py::LoginRequest",
+        "app/models.py::Session"
+      ]
+    }
+  },
+  "scope": "Only explicitly labeled symbols in examples/shop, whole-symbol seeds, depth 6; field-level reasoning is not evaluated."
+}
