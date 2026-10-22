@@ -1,0 +1,418 @@
+{
+  "after": {
+    "commit": "b1125d8839482cb7bbae603ddc6d0081bf87532e",
+    "expectations_sha256": "9920742209a05e35296ae78e3c1dac2e0c262f24dfc356d6aad3944c2e805f5b",
+    "files": 40,
+    "issue_counts": {
+      "external_or_unresolved": 142,
+      "unresolved_annotation": 110,
+      "unresolved_base": 15,
+      "unresolved_call": 487,
+      "unresolved_comprehension": 2,
+      "unresolved_dependency": 2,
+      "unresolved_local": 22,
+      "unresolved_route": 23
+    },
+    "parsed": 40,
+    "provenance": "Manually read models.py, api/deps.py and api/routes/items.py before scanning this checkout. Partial labeled symbol universe; outside-universe discoveries are reported separately, never counted automatically as false positives.",
+    "repository": "https://github.com/fastapi/full-stack-fastapi-template",
+    "scenarios": {
+      "current_user": {
+        "false_positive": [],
+        "found": [
+          "app/api/deps.py::get_current_active_superuser",
+          "app/api/deps.py::get_current_user",
+          "app/api/routes/items.py::create_item",
+          "app/api/routes/items.py::delete_item",
+          "app/api/routes/items.py::read_item",
+          "app/api/routes/items.py::read_items",
+          "app/api/routes/items.py::update_item",
+          "app/api/routes/login.py::test_token"
+        ],
+        "matched_edges": [],
+        "missed": [],
+        "missing_edges": [],
+        "outside_labeled_universe": [
+          "app/api/deps.py::CurrentUser",
+          "app/api/routes/login.py::recover_password_html_content",
+          "app/api/routes/users.py::create_user",
+          "app/api/routes/users.py::delete_user",
+          "app/api/routes/users.py::delete_user_me",
+          "app/api/routes/users.py::read_user_by_id",
+          "app/api/routes/users.py::read_user_me",
+          "app/api/routes/users.py::read_users",
+          "app/api/routes/users.py::update_password_me",
+          "app/api/routes/users.py::update_user",
+          "app/api/routes/users.py::update_user_me",
+          "app/api/routes/utils.py::test_email"
+        ],
+        "precision": 1.0,
+        "recall": 1.0,
+        "truncated": false
+      },
+      "item_base": {
+        "false_positive": [
+          "app/api/routes/login.py::login_access_token"
+        ],
+        "found": [
+          "app/api/routes/items.py::create_item",
+          "app/api/routes/items.py::delete_item",
+          "app/api/routes/items.py::read_item",
+          "app/api/routes/items.py::read_items",
+          "app/api/routes/items.py::update_item",
+          "app/api/routes/login.py::login_access_token",
+          "app/models.py::Item",
+          "app/models.py::ItemBase",
+          "app/models.py::ItemCreate",
+          "app/models.py::ItemPublic",
+          "app/models.py::ItemsPublic"
+        ],
+        "matched_edges": [
+          [
+            "app/models.py::ItemCreate",
+            "app/models.py::ItemBase",
+            "inherits",
+            "app/models.py",
+            76
+          ],
+          [
+            "app/models.py::Item",
+            "app/models.py::ItemBase",
+            "inherits",
+            "app/models.py",
+            87
+          ],
+          [
+            "app/models.py::ItemPublic",
+            "app/models.py::ItemBase",
+            "inherits",
+            "app/models.py",
+            97
+          ],
+          [
+            "app/api/routes/items.py::create_item",
+            "app/models.py::ItemCreate",
+            "annotation",
+            "app/api/routes/items.py",
+            63
+          ],
+          [
+            "app/api/routes/items.py::create_item",
+            "app/models.py::ItemPublic",
+            "response_model",
+            "app/api/routes/items.py",
+            61
+          ],
+          [
+            "app/api/routes/items.py::read_item",
+            "app/models.py::ItemPublic",
+            "response_model",
+            "app/api/routes/items.py",
+            48
+          ],
+          [
+            "app/api/routes/items.py::update_item",
+            "app/models.py::ItemPublic",
+            "response_model",
+            "app/api/routes/items.py",
+            75
+          ],
+          [
+            "app/models.py::ItemsPublic",
+            "app/models.py::ItemPublic",
+            "annotation",
+            "app/models.py",
+            104
+          ]
+        ],
+        "missed": [],
+        "missing_edges": [],
+        "outside_labeled_universe": [
+          "app/api/deps.py::CurrentUser",
+          "app/api/deps.py::get_current_active_superuser",
+          "app/api/deps.py::get_current_user",
+          "app/api/routes/login.py::recover_password",
+          "app/api/routes/login.py::recover_password_html_content",
+          "app/api/routes/login.py::reset_password",
+          "app/api/routes/login.py::test_token",
+          "app/api/routes/private.py::create_user",
+          "app/api/routes/users.py::create_user",
+          "app/api/routes/users.py::delete_user",
+          "app/api/routes/users.py::delete_user_me",
+          "app/api/routes/users.py::read_user_by_id",
+          "app/api/routes/users.py::read_user_me",
+          "app/api/routes/users.py::read_users",
+          "app/api/routes/users.py::register_user",
+          "app/api/routes/users.py::update_password_me",
+          "app/api/routes/users.py::update_user",
+          "app/api/routes/users.py::update_user_me",
+          "app/api/routes/utils.py::test_email",
+          "app/core/db.py::init_db",
+          "app/crud.py::authenticate",
+          "app/crud.py::create_item",
+          "app/crud.py::create_user",
+          "app/crud.py::get_user_by_email",
+          "app/crud.py::update_user",
+          "app/initial_data.py::init",
+          "app/initial_data.py::main",
+          "app/models.py::User",
+          "tests/api/routes/test_items.py::test_delete_item",
+          "tests/api/routes/test_items.py::test_delete_item_not_enough_permissions",
+          "tests/api/routes/test_items.py::test_read_item",
+          "tests/api/routes/test_items.py::test_read_item_not_enough_permissions",
+          "tests/api/routes/test_items.py::test_read_items",
+          "tests/api/routes/test_items.py::test_update_item",
+          "tests/api/routes/test_items.py::test_update_item_not_enough_permissions",
+          "tests/api/routes/test_login.py::test_login_with_argon2_password_keeps_hash",
+          "tests/api/routes/test_login.py::test_login_with_bcrypt_password_upgrades_to_argon2",
+          "tests/api/routes/test_login.py::test_reset_password",
+          "tests/api/routes/test_users.py::test_create_user_existing_username",
+          "tests/api/routes/test_users.py::test_create_user_new_email",
+          "tests/api/routes/test_users.py::test_delete_user_current_super_user_error",
+          "tests/api/routes/test_users.py::test_delete_user_me",
+          "tests/api/routes/test_users.py::test_delete_user_super_user",
+          "tests/api/routes/test_users.py::test_delete_user_without_privileges",
+          "tests/api/routes/test_users.py::test_get_existing_user_as_superuser",
+          "tests/api/routes/test_users.py::test_get_existing_user_current_user",
+          "tests/api/routes/test_users.py::test_get_existing_user_permissions_error",
+          "tests/api/routes/test_users.py::test_retrieve_users",
+          "tests/api/routes/test_users.py::test_update_user",
+          "tests/api/routes/test_users.py::test_update_user_email_exists",
+          "tests/api/routes/test_users.py::test_update_user_me_email_exists",
+          "tests/conftest.py::db",
+          "tests/conftest.py::normal_user_token_headers",
+          "tests/crud/test_user.py::test_authenticate_user",
+          "tests/crud/test_user.py::test_authenticate_user_with_bcrypt_upgrades_to_argon2",
+          "tests/crud/test_user.py::test_check_if_user_is_active",
+          "tests/crud/test_user.py::test_check_if_user_is_active_inactive",
+          "tests/crud/test_user.py::test_check_if_user_is_superuser",
+          "tests/crud/test_user.py::test_check_if_user_is_superuser_normal_user",
+          "tests/crud/test_user.py::test_create_user",
+          "tests/crud/test_user.py::test_get_user",
+          "tests/crud/test_user.py::test_not_authenticate_user",
+          "tests/crud/test_user.py::test_update_user",
+          "tests/utils/item.py::create_random_item",
+          "tests/utils/user.py::authentication_token_from_email",
+          "tests/utils/user.py::create_random_user"
+        ],
+        "precision": 0.9090909090909091,
+        "recall": 1.0,
+        "truncated": false
+      }
+    }
+  },
+  "baseline_commit": "4e4d15c6db1720df14c5299f33f325dcfa147760",
+  "before": {
+    "commit": "b1125d8839482cb7bbae603ddc6d0081bf87532e",
+    "expectations_sha256": "9920742209a05e35296ae78e3c1dac2e0c262f24dfc356d6aad3944c2e805f5b",
+    "files": 40,
+    "issue_counts": {
+      "external_or_unresolved": 142,
+      "unresolved_annotation_alias": 3,
+      "unresolved_base": 15,
+      "unresolved_call": 487,
+      "unresolved_class_annotation": 70,
+      "unresolved_comprehension": 2,
+      "unresolved_dependency": 1,
+      "unresolved_local": 29,
+      "unresolved_route": 23
+    },
+    "parsed": 40,
+    "provenance": "Manually read models.py, api/deps.py and api/routes/items.py before scanning this checkout. Partial labeled symbol universe; outside-universe discoveries are reported separately, never counted automatically as false positives.",
+    "repository": "https://github.com/fastapi/full-stack-fastapi-template",
+    "scenarios": {
+      "current_user": {
+        "false_positive": [],
+        "found": [
+          "app/api/deps.py::get_current_user"
+        ],
+        "matched_edges": [],
+        "missed": [
+          "app/api/deps.py::get_current_active_superuser",
+          "app/api/routes/items.py::create_item",
+          "app/api/routes/items.py::delete_item",
+          "app/api/routes/items.py::read_item",
+          "app/api/routes/items.py::read_items",
+          "app/api/routes/items.py::update_item",
+          "app/api/routes/login.py::test_token"
+        ],
+        "missing_edges": [],
+        "outside_labeled_universe": [],
+        "precision": 1.0,
+        "recall": 0.125,
+        "truncated": false
+      },
+      "item_base": {
+        "false_positive": [],
+        "found": [
+          "app/api/routes/items.py::create_item",
+          "app/api/routes/items.py::read_item",
+          "app/api/routes/items.py::update_item",
+          "app/models.py::Item",
+          "app/models.py::ItemBase",
+          "app/models.py::ItemCreate",
+          "app/models.py::ItemPublic"
+        ],
+        "matched_edges": [
+          [
+            "app/models.py::ItemCreate",
+            "app/models.py::ItemBase",
+            "inherits",
+            "app/models.py",
+            76
+          ],
+          [
+            "app/models.py::Item",
+            "app/models.py::ItemBase",
+            "inherits",
+            "app/models.py",
+            87
+          ],
+          [
+            "app/models.py::ItemPublic",
+            "app/models.py::ItemBase",
+            "inherits",
+            "app/models.py",
+            97
+          ],
+          [
+            "app/api/routes/items.py::create_item",
+            "app/models.py::ItemCreate",
+            "annotation",
+            "app/api/routes/items.py",
+            63
+          ],
+          [
+            "app/api/routes/items.py::create_item",
+            "app/models.py::ItemPublic",
+            "response_model",
+            "app/api/routes/items.py",
+            61
+          ],
+          [
+            "app/api/routes/items.py::read_item",
+            "app/models.py::ItemPublic",
+            "response_model",
+            "app/api/routes/items.py",
+            48
+          ],
+          [
+            "app/api/routes/items.py::update_item",
+            "app/models.py::ItemPublic",
+            "response_model",
+            "app/api/routes/items.py",
+            75
+          ]
+        ],
+        "missed": [
+          "app/api/routes/items.py::delete_item",
+          "app/api/routes/items.py::read_items",
+          "app/models.py::ItemsPublic"
+        ],
+        "missing_edges": [
+          [
+            "app/models.py::ItemsPublic",
+            "app/models.py::ItemPublic",
+            "annotation",
+            "app/models.py",
+            104
+          ]
+        ],
+        "outside_labeled_universe": [
+          "app/crud.py::create_item",
+          "tests/api/routes/test_items.py::test_delete_item",
+          "tests/api/routes/test_items.py::test_delete_item_not_enough_permissions",
+          "tests/api/routes/test_items.py::test_read_item",
+          "tests/api/routes/test_items.py::test_read_item_not_enough_permissions",
+          "tests/api/routes/test_items.py::test_read_items",
+          "tests/api/routes/test_items.py::test_update_item",
+          "tests/api/routes/test_items.py::test_update_item_not_enough_permissions",
+          "tests/utils/item.py::create_random_item"
+        ],
+        "precision": 1.0,
+        "recall": 0.7,
+        "truncated": false
+      }
+    }
+  },
+  "labeled_false_positive_chain": [
+    {
+      "certainty": "observed",
+      "evidence": {
+        "line": 87,
+        "path": "app/models.py"
+      },
+      "origin": "python-ast",
+      "source": "app/models.py::Item",
+      "target": "app/models.py::ItemBase",
+      "type": "inherits"
+    },
+    {
+      "certainty": "observed",
+      "evidence": {
+        "line": 55,
+        "path": "app/models.py"
+      },
+      "origin": "python-ast",
+      "source": "app/models.py::User",
+      "target": "app/models.py::Item",
+      "type": "annotation"
+    },
+    {
+      "certainty": "observed",
+      "evidence": {
+        "line": 45,
+        "path": "app/crud.py"
+      },
+      "origin": "python-ast",
+      "source": "app/crud.py::authenticate",
+      "target": "app/models.py::User",
+      "type": "annotation"
+    },
+    {
+      "certainty": "observed",
+      "evidence": {
+        "line": 30,
+        "path": "app/api/routes/login.py"
+      },
+      "origin": "python-ast",
+      "source": "app/api/routes/login.py::login_access_token",
+      "target": "app/crud.py::authenticate",
+      "type": "calls"
+    }
+  ],
+  "supplementary_evidence_audit": [
+    {
+      "line": 49,
+      "matched": true,
+      "path": "app/api/deps.py",
+      "source": "app/api/deps.py::CurrentUser",
+      "target": "app/api/deps.py::get_current_user",
+      "type": "depends"
+    },
+    {
+      "line": 52,
+      "matched": true,
+      "path": "app/api/deps.py",
+      "source": "app/api/deps.py::get_current_active_superuser",
+      "target": "app/api/deps.py::CurrentUser",
+      "type": "annotation"
+    },
+    {
+      "line": 49,
+      "matched": true,
+      "path": "app/api/routes/items.py",
+      "source": "app/api/routes/items.py::read_item",
+      "target": "app/api/deps.py::CurrentUser",
+      "type": "annotation"
+    },
+    {
+      "line": 104,
+      "matched": true,
+      "path": "app/models.py",
+      "source": "app/models.py::ItemsPublic",
+      "target": "app/models.py::ItemPublic",
+      "type": "annotation"
+    }
+  ]
+}
