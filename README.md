@@ -54,13 +54,14 @@ change-radar install-skill --agent claude --scope project --root /path/to/repo -
 
 Depth and result limits default to 4 and 200. Truncation is reported. File seeds include definitions in that file. Impact follows incoming references, including containment (reported separately from consumers). Each edge has type, AST origin, certainty, and path:line evidence. Each reached item includes its shortest discovered evidence chain. Import relationships remain imports.
 
-The HTML explorer provides pan/zoom, draggable nodes, focused neighborhood, search, relation/type/depth/certainty filters, evidence inspection, endpoints, existing test suggestions, new regression scenarios, coverage, and JSON/Markdown downloads. It displays at most 70 matching nodes. Search/filter to explore larger graphs; this is not a large-graph rendering engine. CLI-generated Markdown contains the fuller coverage report; browser Markdown export is a compact impact-chain export.
+The HTML explorer provides pan/zoom, draggable nodes, focused neighborhood, search, relation/type/depth/certainty filters, evidence inspection, endpoints, existing test suggestions, new regression scenarios, coverage, and JSON/Markdown downloads. It displays at most 70 matching nodes. Search/filter to explore larger graphs; this is not a large-graph rendering engine. CLI and browser Markdown downloads use the same generator and preserve existing-test evidence labels.
 
 ## Verify and build
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python scripts/evaluate.py
+.venv/bin/python scripts/evaluate_independent.py
 .venv/bin/python -m pip install build
 .venv/bin/python -m build
 ```
@@ -81,6 +82,8 @@ Analysis reads source locally and only emits identifiers, paths, line numbers, r
 
 ## Status and ownership
 
-See [validation status](docs/VALIDATION.md) for tested versus untested behavior. Runtime discovery/end-to-end behavior in Codex and Claude Code and visual browser QA are not yet validated. No cache is enabled; scans always rebuild from current files. No public repository, package publication, deployment, or social post has been made.
+See [validation status](docs/VALIDATION.md) for tested versus untested behavior. Runtime discovery/end-to-end behavior in Codex and Claude Code and visual browser QA are not yet validated. No cache is enabled; scans always rebuild from current files. The baseline source is public on GitHub. The correctness follow-up records its local validation separately; no package publication, deployment, or social post has been made.
 
 A distribution license and copyright holder have **not been selected**. Do not treat this checkout as licensed open source until its owner chooses a license. [Contributing](CONTRIBUTING.md).
+
+The [correctness review](docs/CORRECTNESS_REVIEW.md) documents parameter/scope/inheritance fixes and independent evaluation. Three source-labeled fixture sets pass, but the pinned public FastAPI project exposes misses: scoped recall is 0.70 for ItemBase and 0.125 for the shared CurrentUser dependency alias. These measurements are not general accuracy claims.

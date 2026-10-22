@@ -77,6 +77,31 @@ with tempfile.TemporaryDirectory(prefix="radar-wheel-") as folder:
         base / "report.md",
     )
     assert (base / "report.md").read_text().startswith("# Change Radar")
+    fixture = base / "inheritance-fixture"
+    fixture.mkdir()
+    (fixture / "models.py").write_text("class Base: pass\nclass Child(Base): pass\n")
+    (fixture / "api.py").write_text(
+        "from fastapi import FastAPI\nfrom models import Child\napp = FastAPI()\n@app.get('/items', response_model=Child)\ndef items(): pass\n"
+    )
+    (fixture / "tests").mkdir()
+    (fixture / "tests/test_http.py").write_text(
+        "def test_http(): client.get('/items')\n"
+    )
+    result = json.loads(run("impact", fixture, "--seed", "models.py::Base").stdout)
+    inherited = next(e for e in result["edges"] if e["type"] == "inherits")
+    assert inherited["source"] == "models.py::Child"
+    assert inherited["target"] == "models.py::Base"
+    assert inherited["evidence"] == {"path": "models.py", "line": 2}
+    candidate = next(
+        t for t in result["suggested_tests"] if t["id"].endswith("::test_http")
+    )
+    assert candidate["evidence"] == "endpoint_literal_candidate"
+    (base / "inheritance.json").write_text(json.dumps(result))
+    exported = run("report", base / "inheritance.json", "--format", "markdown").stdout
+    html = run("report", base / "inheritance.json", "--format", "html").stdout
+    assert "`tests/test_http.py::test_http` (endpoint_literal_candidate)" in exported
+    assert "const markdownReport = " in html
+    assert "__RADAR_MARKDOWN__" not in html
     print(
-        "PASS: fresh wheel install, CLI, HTML/Markdown assets, both local skill installers; no agent runtime invoked."
+        "PASS: fresh wheel install, CLI, HTML/Markdown assets, both local skill installers, inherits and test-label exports; no agent runtime invoked."
     )

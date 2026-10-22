@@ -1,0 +1,30 @@
+{
+  "repository": "https://github.com/fastapi/full-stack-fastapi-template",
+  "commit": "b1125d8839482cb7bbae603ddc6d0081bf87532e",
+  "root": "backend",
+  "provenance": "Manually read models.py, api/deps.py and api/routes/items.py before scanning this checkout. Partial labeled symbol universe; outside-universe discoveries are reported separately, never counted automatically as false positives.",
+  "scenarios": {
+    "item_base": {
+      "seed": "app/models.py::ItemBase",
+      "related": ["app/models.py::ItemBase", "app/models.py::ItemCreate", "app/models.py::Item", "app/models.py::ItemPublic", "app/models.py::ItemsPublic", "app/api/routes/items.py::create_item", "app/api/routes/items.py::read_item", "app/api/routes/items.py::update_item", "app/api/routes/items.py::read_items", "app/api/routes/items.py::delete_item"],
+      "unrelated": ["app/models.py::UserBase", "app/models.py::UserCreate", "app/models.py::UserPublic", "app/models.py::Token", "app/api/routes/login.py::login_access_token"],
+      "edges": [
+        ["app/models.py::ItemCreate", "app/models.py::ItemBase", "inherits", "app/models.py", 76],
+        ["app/models.py::Item", "app/models.py::ItemBase", "inherits", "app/models.py", 87],
+        ["app/models.py::ItemPublic", "app/models.py::ItemBase", "inherits", "app/models.py", 97],
+        ["app/api/routes/items.py::create_item", "app/models.py::ItemCreate", "annotation", "app/api/routes/items.py", 63],
+        ["app/api/routes/items.py::create_item", "app/models.py::ItemPublic", "response_model", "app/api/routes/items.py", 61],
+        ["app/api/routes/items.py::read_item", "app/models.py::ItemPublic", "response_model", "app/api/routes/items.py", 48],
+        ["app/api/routes/items.py::update_item", "app/models.py::ItemPublic", "response_model", "app/api/routes/items.py", 75],
+        ["app/models.py::ItemsPublic", "app/models.py::ItemPublic", "annotation", "app/models.py", 104]
+      ]
+    },
+    "current_user": {
+      "seed": "app/api/deps.py::get_current_user",
+      "related": ["app/api/deps.py::get_current_user", "app/api/deps.py::get_current_active_superuser", "app/api/routes/items.py::read_item", "app/api/routes/items.py::read_items", "app/api/routes/items.py::create_item", "app/api/routes/items.py::update_item", "app/api/routes/items.py::delete_item", "app/api/routes/login.py::test_token"],
+      "unrelated": ["app/models.py::ItemBase", "app/models.py::Token", "app/api/routes/login.py::login_access_token"],
+      "manual_chain": ["app/api/deps.py:49 declares CurrentUser = Annotated[User, Depends(get_current_user)]", "app/api/deps.py:52 consumes CurrentUser", "app/api/routes/items.py:49 consumes CurrentUser", "app/api/routes/login.py:46 consumes CurrentUser"],
+      "edges": []
+    }
+  }
+}

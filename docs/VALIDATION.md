@@ -1,23 +1,27 @@
-# Validation status · 2026-10-22
+# Validation status · correctness follow-up
 
-Implemented and locally checked:
+Local environment: Python 3.14.4/Linux. The initial Git working tree was clean;
+changes were initially prepared locally for review. The user subsequently authorized committing and pushing the reviewed changes.
 
-- 22 standard-library unittest behavioral cases pass on Python 3.14.4/Linux. These analyze fixture source without importing/executing it.
-- Three fixed demo evaluations pass; scoped precision/recall and actual timings are recorded in evaluation.json.
-- Three real demo scenarios produce standalone HTML, JSON and Markdown under `.change-radar/demo/`.
-- Editable install and standard wheel/sdist build succeed. Fresh virtual-environment wheel installation uses `--no-index --no-deps`, and the installed CLI exercises scan, impact, report, HTML template and both agent skill installers.
-- The skill-creator validator accepts the canonical SKILL.md. Installer dry-run and preservation behaviors pass tests; real agent behavior is a separate unchecked layer.
-- Ruff lint/format pass. Extracted inline report JavaScript passes `node --check`; JSON payload roundtrip and script-boundary escaping are tested.
+Checked:
 
-Not validated here:
+- **39 unittest methods pass**, including all 22 previous methods, 16 correctness/export regression methods and one three-fixture integration check. Parameter/scenario subtests are not counted as separate methods.
+- Regression tests were run before fixes. The final regression module also runs against the isolated d5b4de8 baseline and fails as documented in regression-baseline.txt.
+- The three original shop evaluations pass again. The three independent fixtures have zero missed expected symbols, false positives, missing expected relations, unexpected related-symbol relations, incorrect evidence lines or missing expected endpoints.
+- The pinned public fastapi/full-stack-fastapi-template checkout was actually analyzed: 40/40 files parsed, no dependencies installed and no target imports/execution. Its partial-label recall is 0.70 (ItemBase) and 0.125 (CurrentUser); see public-evaluation.json for exact found/missed/false-positive sets and coverage counts.
+- Ruff lint and formatting pass over src/tests/scripts. The fixture files are deliberately not autoformatted: manually predeclared evidence line numbers are part of the evaluation contract.
+- Standard wheel/sdist build and fresh offline wheel install are checked; packaged CLI/HTML/Markdown and both skill installers are exercised. A separate installed-wheel check covers the new inherits relation and canonical browser Markdown content.
+- HTML embeds escaped data and canonical Markdown; injection/marker-shaped strings and evidence labels are tested. Extracted generated inline JavaScript passes node --check. These are content/syntax checks, not browser interactions.
+- Three original demos and three independent evaluation reports regenerate as HTML, JSON and Markdown under .change-radar/.
 
-- Browser visual/interaction QA, console output, screenshots and real `file://` opening. Browser runtime setup returned “No browser is available” and browser discovery returned an empty list. JavaScript syntax checking is not a substitute for UI testing.
-- Codex skill discovery and end-to-end seed selection/report quality. A Codex executable is installed, but no separate agent workflow was run.
-- Claude Code end-to-end workflow: its executable is absent.
-- Python 3.11/3.12/3.13 local execution. A CI matrix is provided, but no hosted CI run has occurred.
-- Running the example FastAPI server or its tests: analysis does not need its dependencies; those were not installed/executed in this validation pass.
-- Representative large-repository performance, exact field-level impact and dynamic runtime effects.
+Not checked or still unsupported:
 
-No cache is implemented. No cache-invalidation test is claimed: the tests verify that full rescans reflect changed, deleted and renamed files. No source excerpts or target runtime secrets are included in reports, but identifiers and route literals may themselves be sensitive. Review before sharing.
+- Real browser search/filter/selection/evidence-panel/download/offline opening: the Browser skill returned “No browser is available”, and discovery returned []. No screenshots or interaction results are claimed.
+- End-to-end skill discovery/behavior in Codex or Claude Code remains untested.
+- Python 3.11/3.12/3.13 were not locally executed. The CI matrix includes them, but this revision has not been uploaded. The earlier baseline's hosted CI was blocked before any steps by a GitHub account billing issue; it does not establish a code failure or a pass.
+- Lambda/comprehension bodies, global/nonlocal resolution, generic type-parameter scopes, arbitrary dataflow, inherited method dispatch, exact field-level effects, class-field composition and shared Annotated/Depends aliases remain unsupported. Relevant coverage entries and limitations are emitted.
+- No application server or target tests were run. No representative large-repository performance benchmark or cache was added.
 
-Before public release: owner chooses license/copyright attribution; perform browser QA and actual Codex/Claude Code workflows. No public repository, package publish, deployment or social post has been performed.
+See CORRECTNESS_REVIEW.md for reproduction commands, pre/post behavior and manually
+confirmed public source chains. The distribution license/copyright decision remains
+with the owner. No merge, package publication or deployment occurred in this phase.

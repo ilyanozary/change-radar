@@ -1,0 +1,43 @@
+{
+  "provenance": "Written from fixture source before the first scan of these fixtures. The analyzer output is not used to construct expectations. Scope: all declared fixture symbols, excluding file containers.",
+  "orders": {
+    "seed": "pricing.py::total_price",
+    "related": ["pricing.py::total_price", "consumers.py::checkout", "consumers.py::invoice", "api.py::quote"],
+    "unrelated": ["consumers.py::stock_count", "api.py::health"],
+    "edges": [
+      ["consumers.py::checkout", "pricing.py::total_price", "calls", "consumers.py", 5],
+      ["consumers.py::invoice", "pricing.py::total_price", "calls", "consumers.py", 9],
+      ["api.py::quote", "consumers.py::checkout", "calls", "api.py", 9]
+    ],
+    "endpoints": [["api.py::quote", "POST", "/quote"]]
+  },
+  "inheritance": {
+    "seed": "models.py::Record",
+    "related": ["models.py::Record", "models.py::OrderRequest", "models.py::OrderResponse", "models.py::DetailedResponse", "models.py::AuditRequest", "api.py::create", "api.py::read", "api.py::audit"],
+    "unrelated": ["models.py::Health", "api.py::health"],
+    "edges": [
+      ["models.py::OrderRequest", "models.py::Record", "inherits", "models.py", 8],
+      ["models.py::OrderResponse", "models.py::Record", "inherits", "models.py", 12],
+      ["models.py::DetailedResponse", "models.py::OrderResponse", "inherits", "models.py", 16],
+      ["models.py::AuditRequest", "models.py::Record", "inherits", "models.py", 20],
+      ["api.py::create", "models.py::OrderRequest", "annotation", "api.py", 8],
+      ["api.py::create", "models.py::OrderResponse", "response_model", "api.py", 7],
+      ["api.py::read", "models.py::DetailedResponse", "response_model", "api.py", 12],
+      ["api.py::audit", "models.py::AuditRequest", "annotation", "api.py", 18]
+    ],
+    "endpoints": [["api.py::create", "POST", "/orders"], ["api.py::read", "GET", "/orders/{id}"], ["api.py::audit", "POST", "/audit"]]
+  },
+  "auth": {
+    "seed": "tokens.py::validate_token",
+    "related": ["tokens.py::validate_token", "security.py::principal", "routes.py::me", "routes.py::sessions"],
+    "unrelated": ["tokens.py::unrelated", "routes.py::health"],
+    "edges": [
+      ["security.py::principal", "tokens.py::validate_token", "depends", "security.py", 5],
+      ["routes.py::me", "security.py::principal", "depends", "routes.py", 8],
+      ["routes.py::sessions", "security.py::principal", "depends", "routes.py", 13],
+      ["main.py", "routers.py", "includes_router", "main.py", 5],
+      ["routers.py", "routes.py", "includes_router", "routers.py", 5]
+    ],
+    "endpoints": [["routes.py::me", "GET", "/v2/api/accounts/users/me"], ["routes.py::sessions", "GET", "/v2/api/accounts/users/sessions"]]
+  }
+}

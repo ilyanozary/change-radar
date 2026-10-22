@@ -1,0 +1,182 @@
+{
+  "expectations_sha256": "4c5ddd134f31137c7ed2607e8954c5df5615a76199be4877ff613596f0be8ee7",
+  "scenarios": {
+    "auth": {
+      "expected_relations": [
+        [
+          "security.py::principal",
+          "tokens.py::validate_token",
+          "depends",
+          "security.py",
+          5
+        ],
+        [
+          "routes.py::me",
+          "security.py::principal",
+          "depends",
+          "routes.py",
+          8
+        ],
+        [
+          "routes.py::sessions",
+          "security.py::principal",
+          "depends",
+          "routes.py",
+          13
+        ],
+        [
+          "main.py",
+          "routers.py",
+          "includes_router",
+          "main.py",
+          5
+        ],
+        [
+          "routers.py",
+          "routes.py",
+          "includes_router",
+          "routers.py",
+          5
+        ]
+      ],
+      "false_positive": [],
+      "found": [
+        "routes.py::me",
+        "routes.py::sessions",
+        "security.py::principal",
+        "tokens.py::validate_token"
+      ],
+      "invalid_evidence": [],
+      "missed": [],
+      "missing_edges": [],
+      "missing_endpoints": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "unexpected_edges": [],
+      "unlabeled_symbols": [],
+      "unrelated_found": []
+    },
+    "inheritance": {
+      "expected_relations": [
+        [
+          "models.py::OrderRequest",
+          "models.py::Record",
+          "inherits",
+          "models.py",
+          8
+        ],
+        [
+          "models.py::OrderResponse",
+          "models.py::Record",
+          "inherits",
+          "models.py",
+          12
+        ],
+        [
+          "models.py::DetailedResponse",
+          "models.py::OrderResponse",
+          "inherits",
+          "models.py",
+          16
+        ],
+        [
+          "models.py::AuditRequest",
+          "models.py::Record",
+          "inherits",
+          "models.py",
+          20
+        ],
+        [
+          "api.py::create",
+          "models.py::OrderRequest",
+          "annotation",
+          "api.py",
+          8
+        ],
+        [
+          "api.py::create",
+          "models.py::OrderResponse",
+          "response_model",
+          "api.py",
+          7
+        ],
+        [
+          "api.py::read",
+          "models.py::DetailedResponse",
+          "response_model",
+          "api.py",
+          12
+        ],
+        [
+          "api.py::audit",
+          "models.py::AuditRequest",
+          "annotation",
+          "api.py",
+          18
+        ]
+      ],
+      "false_positive": [],
+      "found": [
+        "api.py::audit",
+        "api.py::create",
+        "api.py::read",
+        "models.py::AuditRequest",
+        "models.py::DetailedResponse",
+        "models.py::OrderRequest",
+        "models.py::OrderResponse",
+        "models.py::Record"
+      ],
+      "invalid_evidence": [],
+      "missed": [],
+      "missing_edges": [],
+      "missing_endpoints": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "unexpected_edges": [],
+      "unlabeled_symbols": [],
+      "unrelated_found": []
+    },
+    "orders": {
+      "expected_relations": [
+        [
+          "consumers.py::checkout",
+          "pricing.py::total_price",
+          "calls",
+          "consumers.py",
+          5
+        ],
+        [
+          "consumers.py::invoice",
+          "pricing.py::total_price",
+          "calls",
+          "consumers.py",
+          9
+        ],
+        [
+          "api.py::quote",
+          "consumers.py::checkout",
+          "calls",
+          "api.py",
+          9
+        ]
+      ],
+      "false_positive": [],
+      "found": [
+        "api.py::quote",
+        "consumers.py::checkout",
+        "consumers.py::invoice",
+        "pricing.py::total_price"
+      ],
+      "invalid_evidence": [],
+      "missed": [],
+      "missing_edges": [],
+      "missing_endpoints": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "unexpected_edges": [],
+      "unlabeled_symbols": [],
+      "unrelated_found": []
+    }
+  },
+  "scope": "Written from fixture source before the first scan of these fixtures. The analyzer output is not used to construct expectations. Scope: all declared fixture symbols, excluding file containers."
+}

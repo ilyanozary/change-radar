@@ -1,7 +1,8 @@
 include README.md CONTRIBUTING.md
-recursive-include docs *.md *.json
+recursive-include docs *.md *.json *.txt
 recursive-include examples *.py *.txt
 recursive-include scripts *.py
 recursive-include tests *.py
 recursive-include src/change_radar *.html *.md
 recursive-include .github *.yml
+recursive-include evaluation *.py *.json *.md

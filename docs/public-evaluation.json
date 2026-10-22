@@ -1,0 +1,133 @@
+{
+  "commit": "b1125d8839482cb7bbae603ddc6d0081bf87532e",
+  "expectations_sha256": "9920742209a05e35296ae78e3c1dac2e0c262f24dfc356d6aad3944c2e805f5b",
+  "files": 40,
+  "issue_counts": {
+    "external_or_unresolved": 142,
+    "unresolved_annotation_alias": 3,
+    "unresolved_base": 15,
+    "unresolved_call": 487,
+    "unresolved_class_annotation": 70,
+    "unresolved_comprehension": 2,
+    "unresolved_dependency": 1,
+    "unresolved_local": 29,
+    "unresolved_route": 23
+  },
+  "parsed": 40,
+  "provenance": "Manually read models.py, api/deps.py and api/routes/items.py before scanning this checkout. Partial labeled symbol universe; outside-universe discoveries are reported separately, never counted automatically as false positives.",
+  "repository": "https://github.com/fastapi/full-stack-fastapi-template",
+  "scenarios": {
+    "current_user": {
+      "false_positive": [],
+      "found": [
+        "app/api/deps.py::get_current_user"
+      ],
+      "matched_edges": [],
+      "missed": [
+        "app/api/deps.py::get_current_active_superuser",
+        "app/api/routes/items.py::create_item",
+        "app/api/routes/items.py::delete_item",
+        "app/api/routes/items.py::read_item",
+        "app/api/routes/items.py::read_items",
+        "app/api/routes/items.py::update_item",
+        "app/api/routes/login.py::test_token"
+      ],
+      "missing_edges": [],
+      "outside_labeled_universe": [],
+      "precision": 1.0,
+      "recall": 0.125,
+      "truncated": false
+    },
+    "item_base": {
+      "false_positive": [],
+      "found": [
+        "app/api/routes/items.py::create_item",
+        "app/api/routes/items.py::read_item",
+        "app/api/routes/items.py::update_item",
+        "app/models.py::Item",
+        "app/models.py::ItemBase",
+        "app/models.py::ItemCreate",
+        "app/models.py::ItemPublic"
+      ],
+      "matched_edges": [
+        [
+          "app/models.py::ItemCreate",
+          "app/models.py::ItemBase",
+          "inherits",
+          "app/models.py",
+          76
+        ],
+        [
+          "app/models.py::Item",
+          "app/models.py::ItemBase",
+          "inherits",
+          "app/models.py",
+          87
+        ],
+        [
+          "app/models.py::ItemPublic",
+          "app/models.py::ItemBase",
+          "inherits",
+          "app/models.py",
+          97
+        ],
+        [
+          "app/api/routes/items.py::create_item",
+          "app/models.py::ItemCreate",
+          "annotation",
+          "app/api/routes/items.py",
+          63
+        ],
+        [
+          "app/api/routes/items.py::create_item",
+          "app/models.py::ItemPublic",
+          "response_model",
+          "app/api/routes/items.py",
+          61
+        ],
+        [
+          "app/api/routes/items.py::read_item",
+          "app/models.py::ItemPublic",
+          "response_model",
+          "app/api/routes/items.py",
+          48
+        ],
+        [
+          "app/api/routes/items.py::update_item",
+          "app/models.py::ItemPublic",
+          "response_model",
+          "app/api/routes/items.py",
+          75
+        ]
+      ],
+      "missed": [
+        "app/api/routes/items.py::delete_item",
+        "app/api/routes/items.py::read_items",
+        "app/models.py::ItemsPublic"
+      ],
+      "missing_edges": [
+        [
+          "app/models.py::ItemsPublic",
+          "app/models.py::ItemPublic",
+          "annotation",
+          "app/models.py",
+          104
+        ]
+      ],
+      "outside_labeled_universe": [
+        "app/crud.py::create_item",
+        "tests/api/routes/test_items.py::test_delete_item",
+        "tests/api/routes/test_items.py::test_delete_item_not_enough_permissions",
+        "tests/api/routes/test_items.py::test_read_item",
+        "tests/api/routes/test_items.py::test_read_item_not_enough_permissions",
+        "tests/api/routes/test_items.py::test_read_items",
+        "tests/api/routes/test_items.py::test_update_item",
+        "tests/api/routes/test_items.py::test_update_item_not_enough_permissions",
+        "tests/utils/item.py::create_random_item"
+      ],
+      "precision": 1.0,
+      "recall": 0.7,
+      "truncated": false
+    }
+  }
+}
