@@ -1,7 +1,7 @@
 # Current validation · 2026-10-23 · 0.1.0a1
 
-The entry tree at 4e4d15c was clean. All changes in this phase are scoped to the two
-annotation patterns, demo/validation and documentation. Commits/push follow AGENTS.md;
+The entry tree at 4e4d15c was clean. The annotation phase covered two annotation patterns, demo/validation and documentation.
+The subsequent browser phase adds Playwright checks and two report interaction fixes. Commits/push follow AGENTS.md;
 no merge, public release, package upload, deploy or social post is authorized.
 
 - **54 unittest methods pass** on Python 3.14.4/Linux: all 39 baseline methods plus
@@ -17,7 +17,10 @@ no merge, public release, package upload, deploy or social post is authorized.
   accidental verification of a stale wheel. Fresh offline installation verifies
   version, CLI, report/skill assets, installer safeguards, inherits, test evidence
   exports and both new patterns. No target dependencies are installed or executed.
-- Ruff lint/format and git diff checks pass. Generated HTML data/export escaping
+- Project CI lint/format scope (`ruff check src tests scripts` and
+  `ruff format --check src tests scripts`) and git diff checks pass. A broader
+  `ruff check .` / `ruff format --check .` also inspected fixed source fixtures and
+  found pre-existing import/format differences; those evidence fixtures were preserved. Generated HTML data/export escaping
   and JavaScript syntax are checked separately from browser interaction.
 - The original three demos plus six preview cases regenerate from actual scans.
   Empty/capped/incomplete/large cases are actual engine outputs from declared or
@@ -28,7 +31,7 @@ no merge, public release, package upload, deploy or social post is authorized.
 | Standalone engine/CLI/package | Verified locally | Fresh offline wheel, existing evaluations, positive/negative tests |
 | Codex skill end-to-end | Verified on one fixture | Real CLI session exit 0; discovery, seeds, engine, source reads and limits reviewed; all 5 source files unchanged |
 | Claude Code end-to-end | Not performed | Executable absent; file installation is a separate passing check |
-| Real browser interactions | Not performed | Browser setup returned no browser; discovery empty; manual steps in BROWSER_ACCEPTANCE.md |
+| Real browser interactions | 16/16 Playwright checks pass | Fresh offline file:// headless Chrome 148; downloads and mouse interactions verified; see BROWSER_ACCEPTANCE.md |
 | Hosted CI | Not a pass | Last reviewed run 39827651500 stopped before any steps because GitHub reported an account billing lock; no account/payment changes made |
 | Python 3.11–3.13 locally | Not performed | Matrix configured, not established by local 3.14 results |
 
@@ -38,6 +41,6 @@ instance/inherited dispatch, lambda/comprehension bodies and global/nonlocal nam
 Annotation/ORM composition can overapproximate affected consumers, as measured.
 No cache or large-repository performance claim is added.
 
-The owner's license/copyright decision and real browser acceptance remain gates to
+The owner's license/copyright decision remains a gate to
 a full public experimental announcement. Missing Claude verification is disclosed;
 no universal agent or accuracy claim is made. See PREVIEW.md and AGENT_VALIDATION.md.

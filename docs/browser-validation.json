@@ -1,0 +1,76 @@
+{
+  "browser": "148.0.7778.215",
+  "playwright": "1.64.1",
+  "offline": true,
+  "transport": "file://",
+  "headless": true,
+  "checks": [
+    {
+      "name": "offline-file-load",
+      "passed": true
+    },
+    {
+      "name": "search-and-no-match",
+      "passed": true
+    },
+    {
+      "name": "node-relation-depth-filters",
+      "passed": true
+    },
+    {
+      "name": "node-evidence-chain-and-focus",
+      "passed": true
+    },
+    {
+      "name": "edge-pointer-selection",
+      "passed": true
+    },
+    {
+      "name": "zoom-pan-node-drag",
+      "passed": true
+    },
+    {
+      "name": "certainty-filter",
+      "passed": true
+    },
+    {
+      "name": "real-json-markdown-downloads",
+      "passed": true
+    },
+    {
+      "name": "composition-witness",
+      "passed": true
+    },
+    {
+      "name": "empty-state",
+      "passed": true
+    },
+    {
+      "name": "analysis-result-cap",
+      "passed": true
+    },
+    {
+      "name": "parse-error-incomplete-state",
+      "passed": true
+    },
+    {
+      "name": "viewport-cap-and-hidden-node-search",
+      "passed": true
+    },
+    {
+      "name": "narrow-screen-layout",
+      "passed": true
+    },
+    {
+      "name": "no-console-or-page-errors",
+      "passed": true
+    },
+    {
+      "name": "no-page-network-requests",
+      "passed": true
+    }
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "network_requests": []
+}

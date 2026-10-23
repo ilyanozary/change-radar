@@ -1,0 +1,80 @@
+{
+  "browser": "148.0.7778.215",
+  "playwright": "1.64.1",
+  "offline": true,
+  "transport": "file://",
+  "headless": true,
+  "checks": [
+    {
+      "name": "offline-file-load",
+      "passed": true
+    },
+    {
+      "name": "search-and-no-match",
+      "passed": true
+    },
+    {
+      "name": "node-relation-depth-filters",
+      "passed": true
+    },
+    {
+      "name": "node-evidence-chain-and-focus",
+      "passed": true
+    },
+    {
+      "name": "edge-pointer-selection",
+      "passed": false,
+      "error": "Locator expected to have text 'depends'\nActual value: Evidence inspector \nCall log:\n  - Expect \"to_have_text\" locator(\"#detail h2\") with timeout 5000ms\n  - waiting for locator(\"#detail h2\")\n    14 × locator resolved to <h2>Evidence inspector</h2>\n       - unexpected value \"Evidence inspector\"\n\nAria snapshot:\n- heading \"Evidence inspector\" [level=2]"
+    },
+    {
+      "name": "zoom-pan-node-drag",
+      "passed": true
+    },
+    {
+      "name": "certainty-filter",
+      "passed": true
+    },
+    {
+      "name": "real-json-markdown-downloads",
+      "passed": true
+    },
+    {
+      "name": "composition-witness",
+      "passed": false,
+      "error": "Locator expected to have text 'response_model'\nActual value: Page \nCall log:\n  - Expect \"to_have_text\" locator(\"#detail h2\") with timeout 5000ms\n  - waiting for locator(\"#detail h2\")\n    14 × locator resolved to <h2>Page</h2>\n       - unexpected value \"Page\"\n\nAria snapshot:\n- heading \"Page\" [level=2]"
+    },
+    {
+      "name": "empty-state",
+      "passed": true
+    },
+    {
+      "name": "analysis-result-cap",
+      "passed": true
+    },
+    {
+      "name": "parse-error-incomplete-state",
+      "passed": true
+    },
+    {
+      "name": "viewport-cap-and-hidden-node-search",
+      "passed": false,
+      "error": "Filtered node remains too small to read"
+    },
+    {
+      "name": "narrow-screen-layout",
+      "passed": false,
+      "error": "Filtered mobile node remains too small to read"
+    },
+    {
+      "name": "no-console-or-page-errors",
+      "passed": true
+    },
+    {
+      "name": "no-page-network-requests",
+      "passed": true
+    }
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "network_requests": []
+}

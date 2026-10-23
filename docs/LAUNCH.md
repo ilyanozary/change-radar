@@ -1,13 +1,14 @@
 # Draft introduction · experimental 0.1
 
-Do not post this automatically. Select a license/copyright holder and complete
+Do not post this automatically. Select a license/copyright holder and review the recorded
 browser acceptance before declaring the downloadable open-source preview ready.
 The local package is 0.1.0a1; no public release/tag/package upload has been made.
 
 ## Reproducible 60-second demo
 
 Preparation: install the checkout and run `python scripts/preview.py`. Browser steps
-below are the planned recording script, not a claim that browser QA has passed.
+below are a planned recording script. Headless Chrome QA passed 16/16 Playwright checks;
+see BROWSER_ACCEPTANCE.md for scope and remaining browser limitations.
 
 0–8s: Ask “اگر وابستگی احراز هویت را تغییر بدهم، چه endpointهایی تحت‌تأثیرند؟”
 Show examples/preview/security.py and the natural request in the agent.
@@ -25,7 +26,7 @@ its keyword Depends witness, then routes.py:9 and :14 consumer annotations.
 this is a type-reference dependency, not proof of serialization failure.
 
 45–53s: Show the existing HTTP test candidate, labeled heuristic, and the manual
-coverage list. Export JSON/Markdown only after manually accepting browser behavior.
+coverage list. Export JSON/Markdown; their actual browser downloads were verified with Playwright.
 
 53–60s: Show the bounded public evaluation result: both scoped recalls improved,
 but ORM composition adds one labeled false positive. Invite fixture-based feedback.
@@ -47,5 +48,5 @@ Code هنوز انجام نشده است.
 حال یک مثبت کاذب ناشی از رابطه‌های ORM باقی ماند. این نتایج ادعای دقت عمومی نیستند.
 تحلیل ایستا محل بررسی را پیشنهاد می‌کند، نه خرابی قطعی یا تضمین ایمنی تغییر.
 
-برای تکمیل معرفی، تأیید دستی مرورگر و تصمیم مالک درباره لایسنس هنوز لازم است.
+برای تکمیل معرفی، تصمیم مالک درباره لایسنس هنوز لازم است؛ ۱۶ بررسی Playwright در Chrome پاس شده‌اند.
 بازخورد همراه با مثال کوچک و انتظار مشخص، برای مرحله بعد مفید است.

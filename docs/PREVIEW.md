@@ -4,7 +4,7 @@ Local package version: **0.1.0a1** (PEP 440 prerelease). No release, package upl
 deployment or social post is authorized or performed. The two analysis patterns
 are implemented and locally validated, but this is **not an unconditional public
 launch readiness declaration**. The owner still needs to select a license and
-complete browser acceptance before announcing the downloadable open-source preview.
+review the recorded browser acceptance before announcing the downloadable open-source preview.
 
 ## Reproduce the demo
 
@@ -133,11 +133,11 @@ git -C /tmp/radar-v01-public checkout --detach FETCH_HEAD
 | Fresh wheel/CLI/assets/skill installers | Verified locally | 0.1.0a1 installed offline into fresh venv |
 | Real Codex skill behavior | Verified on one isolated fixture | Not a guarantee across agents/repos |
 | Real Claude Code behavior | Not performed: executable absent | Do not advertise as end-to-end verified |
-| Browser interaction/offline downloads | Not performed: no browser connected | Manual acceptance still required |
+| Browser interaction/offline downloads | Verified: 16/16 Playwright checks | Headless Chrome/Linux; see BROWSER_ACCEPTANCE.md |
 | License and copyright holder | Owner decision open | Blocker to licensed open-source distribution |
 | Hosted CI | Previous run stopped before tests: account billing lock | No hosted pass claimed; no billing changes made |
 | Coarse ORM composition false positive | Measured limitation | Disclose; no production accuracy claim |
 
-The browser and license gates must be resolved before declaring the public preview
+The license gate must be resolved before declaring the public preview
 fully ready. Missing Claude verification and the documented analysis boundaries
 are acceptable disclosed experimental limitations, not claims of completed support.

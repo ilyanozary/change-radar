@@ -37,4 +37,4 @@ python3 -m venv .venv
 
 ## نسخه آزمایشی ۰.۱
 
-برای دموی alias احراز هویت و مدل تو‌در‌تو، `.venv/bin/python scripts/preview.py` را اجرا و `.change-radar/preview/auth.html` یا `models.html` را باز کنید. نسخه بسته 0.1.0a1 است. رفتار واقعی Codex روی یک مثال جدا بررسی شد؛ بررسی مرورگر و Claude Code انجام نشده است. انتخاب لایسنس و تأیید دستی مرورگر هنوز مانع اعلام آمادگی کامل معرفی عمومی‌اند. [وضعیت دقیق](PREVIEW.md) و [چک‌لیست مرورگر](BROWSER_ACCEPTANCE.md).
+برای دموی alias احراز هویت و مدل تو‌در‌تو، `.venv/bin/python scripts/preview.py` را اجرا و `.change-radar/preview/auth.html` یا `models.html` را باز کنید. نسخه بسته 0.1.0a1 است. رفتار واقعی Codex روی یک مثال جدا بررسی شد؛ ۱۶ بررسی واقعی مرورگر با Playwright در Chrome پاس شده‌اند؛ Claude Code بررسی نشده است. انتخاب لایسنس هنوز مانع اعلام آمادگی کامل معرفی عمومی است. [وضعیت دقیق](PREVIEW.md) و [چک‌لیست مرورگر](BROWSER_ACCEPTANCE.md).
