@@ -1,3 +1,4 @@
+include LICENSE
 include README.md CONTRIBUTING.md
 recursive-include docs *.md *.json *.txt
 recursive-include examples *.py *.txt

@@ -3,13 +3,37 @@
 import json
 import os
 import subprocess
+import tarfile
 import tempfile
 import tomllib
+import zipfile
+from email.parser import BytesParser
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 version = tomllib.loads((root / "pyproject.toml").read_text())["project"]["version"]
 wheel = root / "dist" / f"change_radar-{version}-py3-none-any.whl"
+# Verify shipped bytes and metadata, rather than only trusting build settings.
+license_bytes = (root / "LICENSE").read_bytes()
+with zipfile.ZipFile(wheel) as archive:
+    metadata_path = f"change_radar-{version}.dist-info/METADATA"
+    metadata = BytesParser().parsebytes(archive.read(metadata_path))
+    assert metadata["License-Expression"] == "MIT"
+    assert "LICENSE" in metadata.get_all("License-File", [])
+    assert (
+        archive.read(f"change_radar-{version}.dist-info/licenses/LICENSE")
+        == license_bytes
+    )
+with tarfile.open(root / "dist" / f"change_radar-{version}.tar.gz") as archive:
+    member = archive.extractfile(f"change_radar-{version}/LICENSE")
+    assert member is not None and member.read() == license_bytes
+    pkg_info = archive.extractfile(f"change_radar-{version}/PKG-INFO")
+    assert pkg_info is not None
+    metadata = BytesParser().parsebytes(pkg_info.read())
+    assert metadata["License-Expression"] == "MIT"
+    assert "LICENSE" in metadata.get_all("License-File", [])
+print("PASS: wheel/sdist contain exact LICENSE bytes and MIT metadata")
+
 with tempfile.TemporaryDirectory(prefix="radar-wheel-") as folder:
     base = Path(folder)
     subprocess.run(["python3", "-m", "venv", str(base / "env")], check=True)

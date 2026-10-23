@@ -4,7 +4,7 @@ Before changing Python code, see which consumers may be affected—and follow th
 
 Change Radar builds a local AST graph for Python and common FastAPI patterns, then traces reverse dependencies from explicit files or symbols. The CLI and Codex/Claude Code skill use **one engine**. No API keys, network calls, target imports, or target test execution are required to analyze a repository.
 
-**0.1 experimental preview candidate (0.1.0a1).** Static references are evidence of relationships, not guarantees of runtime behavior. Public announcement remains gated on the owner’s license decision; see [preview status](docs/PREVIEW.md).
+**0.1 experimental preview candidate (0.1.0a1).** Static references are evidence of relationships, not guarantees of runtime behavior. The project is licensed under MIT; see [preview status](docs/PREVIEW.md).
 
 ## Install and try
 
@@ -84,6 +84,11 @@ Analysis reads source locally and only emits identifiers, paths, line numbers, r
 
 See [validation status](docs/VALIDATION.md) for tested versus untested behavior. A real Codex session passed on one isolated fixture, including skill discovery, seed selection, CLI execution and source review. Chrome browser interaction passed 16/16 Playwright checks; Claude Code remains unverified; see [agent validation](docs/AGENT_VALIDATION.md). No cache is enabled; scans always rebuild from current files. The baseline source is public on GitHub. The correctness follow-up records its local validation separately; no package publication, deployment, or social post has been made.
 
-A distribution license and copyright holder have **not been selected**. Do not treat this checkout as licensed open source until its owner chooses a license. [Contributing](CONTRIBUTING.md).
+See [Contributing](CONTRIBUTING.md) for the project workflow.
 
 The [correctness review](docs/CORRECTNESS_REVIEW.md) documents parameter/scope/inheritance fixes and independent evaluation. Three source-labeled fixture sets still pass. The [preview comparison](docs/PREVIEW.md) uses the same pinned public project and unchanged ground truth: scoped recall is now 1.0 for both seeds, but ItemBase has one labeled false positive (precision 10/11). These are limited measurements, not general accuracy claims.
+
+## License
+
+[MIT License](LICENSE). Copyright (c) 2026 Ilya Nozary.
+Third-party components retain their respective licenses and copyright notices.

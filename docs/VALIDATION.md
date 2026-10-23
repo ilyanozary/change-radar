@@ -41,6 +41,6 @@ instance/inherited dispatch, lambda/comprehension bodies and global/nonlocal nam
 Annotation/ORM composition can overapproximate affected consumers, as measured.
 No cache or large-repository performance claim is added.
 
-The owner's license/copyright decision remains a gate to
-a full public experimental announcement. Missing Claude verification is disclosed;
+The project now uses the [MIT License](../LICENSE), with
+Copyright (c) 2026 Ilya Nozary. Both distribution formats include the license. Missing Claude verification is disclosed;
 no universal agent or accuracy claim is made. See PREVIEW.md and AGENT_VALIDATION.md.

@@ -1,6 +1,6 @@
 # Draft introduction · experimental 0.1
 
-Do not post this automatically. Select a license/copyright holder and review the recorded
+Do not post this automatically. The [MIT License](../LICENSE) is selected. Review the recorded
 browser acceptance before declaring the downloadable open-source preview ready.
 The local package is 0.1.0a1; no public release/tag/package upload has been made.
 
@@ -48,5 +48,5 @@ Code هنوز انجام نشده است.
 حال یک مثبت کاذب ناشی از رابطه‌های ORM باقی ماند. این نتایج ادعای دقت عمومی نیستند.
 تحلیل ایستا محل بررسی را پیشنهاد می‌کند، نه خرابی قطعی یا تضمین ایمنی تغییر.
 
-برای تکمیل معرفی، تصمیم مالک درباره لایسنس هنوز لازم است؛ ۱۶ بررسی Playwright در Chrome پاس شده‌اند.
+برای تکمیل معرفی، لایسنس [MIT](../LICENSE) انتخاب شده است؛ ۱۶ بررسی Playwright در Chrome پاس شده‌اند.
 بازخورد همراه با مثال کوچک و انتظار مشخص، برای مرحله بعد مفید است.

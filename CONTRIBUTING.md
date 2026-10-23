@@ -4,4 +4,4 @@ Start with the README and docs/ANALYSIS.md. Run `python -m unittest discover -s 
 
 Keep changes focused, deterministic, and offline. Do not embed secrets or source excerpts in reports. Update documented support boundaries when adding a resolver pattern. Write expected related/unrelated symbols and evidence before the first scan of a new fixture. Preserve scope boundaries when collecting bindings. The fixed fixtures and partial pinned public evaluation are not general accuracy benchmarks.
 
-The project owner still needs to select a license and copyright holder before public distribution; no license grant is implied by this checkout.
+Change Radar is licensed under the [MIT License](LICENSE). Preserve applicable third-party copyright and license notices.
